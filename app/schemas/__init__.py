@@ -5,6 +5,10 @@ from app.schemas.package import (
     PackageResponse,
     PackageItemResponse,
 )
+from app.schemas.appointment import (
+    BookWithCreditRequest,
+    AppointmentResponse,
+)
 
 __all__ = [
     "PackagePurchaseRequest",
@@ -12,4 +16,7 @@ __all__ = [
     "CustomerPackageBalanceResponse",
     "PackageResponse",
     "PackageItemResponse",
+    "BookWithCreditRequest",
+    "AppointmentResponse",
 ]
+
