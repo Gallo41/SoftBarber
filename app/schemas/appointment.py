@@ -12,6 +12,10 @@ class BookWithCreditRequest(BaseModel):
     idempotency_key: Optional[str] = None
 
 
+class CancelAppointmentRequest(BaseModel):
+    cancellation_reason: Optional[str] = None
+
+
 class AppointmentResponse(BaseModel):
     id: int
     professional_id: int

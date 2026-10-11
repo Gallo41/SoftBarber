@@ -1,9 +1,11 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.schemas.appointment import (
     BookWithCreditRequest,
+    CancelAppointmentRequest,
     AppointmentResponse,
 )
 from app.services.appointment_service import AppointmentService
@@ -40,3 +42,33 @@ def book_with_credit(
         start_time=payload.start_time,
         idempotency_key=payload.idempotency_key,
     )
+
+
+@router.post(
+    "/appointments/{appointment_id}/cancel",
+    response_model=AppointmentResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Cancel appointment and refund credit if within deadline",
+)
+@router.post(
+    "/api/v1/appointments/{appointment_id}/cancel",
+    response_model=AppointmentResponse,
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+def cancel_appointment(
+    appointment_id: int,
+    payload: Optional[CancelAppointmentRequest] = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Cancels an appointment. If canceled within the allowed deadline window,
+    refunds package credit (+1) and registers in the audit ledger.
+    """
+    reason = payload.cancellation_reason if payload else None
+    return AppointmentService.cancel_appointment(
+        db=db,
+        appointment_id=appointment_id,
+        cancellation_reason=reason,
+    )
+

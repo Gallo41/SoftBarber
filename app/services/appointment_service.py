@@ -17,6 +17,8 @@ from app.models.appointment import (
     AppointmentStatus,
     PaymentType,
 )
+from app.core.config import settings
+from app.models.settings import BusinessSettings
 from app.models.ledger import (
     CreditLedgerTransaction,
     LedgerTransactionType,
@@ -41,6 +43,11 @@ class PackageExpiredError(HTTPException):
 class AppointmentNotFoundError(HTTPException):
     def __init__(self, detail: str = "Appointment not found"):
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
+
+class InvalidAppointmentStatusError(HTTPException):
+    def __init__(self, detail: str = "Appointment cannot be cancelled"):
+        super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
 
 
 class AppointmentService:
@@ -193,4 +200,105 @@ class AppointmentService:
         except Exception:
             db.rollback()
             raise
+
+    @staticmethod
+    def cancel_appointment(
+        db: Session,
+        appointment_id: int,
+        cancellation_reason: Optional[str] = None,
+    ) -> Appointment:
+        """
+        Cancels an appointment and refunds package credit if within cancellation deadline:
+        1. Locks Appointment with with_for_update().
+        2. If status is already CANCELLED or COMPLETED, raises 400.
+        3. Retrieves cancellation_window_hours from BusinessSettings (fallback to settings.CANCELLATION_WINDOW_HOURS / 2).
+        4. Calculates deadline = appointment.start_time - timedelta(hours=window_hours).
+        5. If now <= deadline and payment_type == PaymentType.PACKAGE_CREDIT:
+           - Finds original DEBIT_BOOKING in CreditLedgerTransaction.
+           - Locks CustomerPackageBalance with with_for_update().
+           - Increments balance.remaining_quantity += 1.
+           - If package status was EXHAUSTED, restores to ACTIVE.
+           - Inserts REFUND_CANCELLATION in CreditLedgerTransaction (+1).
+        6. Updates appointment status=CANCELLED, cancelled_at=now, cancellation_reason=reason.
+        7. Commits and returns Appointment.
+        """
+        # 1. Lock Appointment with with_for_update()
+        appointment = db.scalar(
+            select(Appointment).where(Appointment.id == appointment_id).with_for_update()
+        )
+        if appointment is None:
+            raise AppointmentNotFoundError(f"Appointment {appointment_id} not found")
+
+        # 2. Status validation
+        if appointment.status in (AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED):
+            raise InvalidAppointmentStatusError(
+                f"Cannot cancel appointment with status {appointment.status.value}"
+            )
+
+        # 3. Determine cancellation window
+        business_settings = db.scalar(select(BusinessSettings).limit(1))
+        if business_settings and business_settings.cancellation_window_hours is not None:
+            window_hours = business_settings.cancellation_window_hours
+        else:
+            window_hours = getattr(settings, "CANCELLATION_WINDOW_HOURS", 2)
+
+        # 4. Calculate deadline and check window
+        now = datetime.datetime.now()
+        start_time = appointment.start_time
+        if start_time.tzinfo is not None and now.tzinfo is None:
+            now = datetime.datetime.now(start_time.tzinfo)
+        elif start_time.tzinfo is None and now.tzinfo is not None:
+            now = now.replace(tzinfo=None)
+
+        deadline = start_time - datetime.timedelta(hours=window_hours)
+        is_within_deadline = (now <= deadline)
+
+        try:
+            # 5. Refund credit if within deadline and paid with package credit
+            if is_within_deadline and appointment.payment_type == PaymentType.PACKAGE_CREDIT:
+                debit_tx = db.scalar(
+                    select(CreditLedgerTransaction).where(
+                        CreditLedgerTransaction.appointment_id == appointment.id,
+                        CreditLedgerTransaction.type == LedgerTransactionType.DEBIT_BOOKING,
+                    )
+                )
+                if debit_tx:
+                    balance = db.scalar(
+                        select(CustomerPackageBalance)
+                        .where(
+                            CustomerPackageBalance.customer_package_id == debit_tx.customer_package_id,
+                            CustomerPackageBalance.service_id == debit_tx.service_id,
+                        )
+                        .with_for_update()
+                    )
+                    if balance:
+                        balance.remaining_quantity += 1
+
+                        customer_package = db.get(CustomerPackage, balance.customer_package_id)
+                        if customer_package and customer_package.status == PackageStatus.EXHAUSTED:
+                            customer_package.status = PackageStatus.ACTIVE
+
+                        refund_tx = CreditLedgerTransaction(
+                            customer_package_id=balance.customer_package_id,
+                            service_id=balance.service_id,
+                            appointment_id=appointment.id,
+                            type=LedgerTransactionType.REFUND_CANCELLATION,
+                            amount=1,
+                            balance_after=balance.remaining_quantity,
+                            notes=f"Refund cancellation for appointment #{appointment.id}",
+                        )
+                        db.add(refund_tx)
+
+            # 6. Update appointment
+            appointment.status = AppointmentStatus.CANCELLED
+            appointment.cancelled_at = now
+            appointment.cancellation_reason = cancellation_reason
+
+            db.commit()
+            db.refresh(appointment)
+            return appointment
+        except Exception:
+            db.rollback()
+            raise
+
 
