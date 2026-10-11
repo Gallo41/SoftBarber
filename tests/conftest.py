@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 from app.core.database import Base
+import app.models  # Register all models with Base.metadata
 
 
 @pytest.fixture(scope="session")
@@ -36,5 +37,7 @@ def db_session(test_engine):
     yield session
     
     session.close()
-    transaction.rollback()
+    if transaction.is_active:
+        transaction.rollback()
     connection.close()
+
