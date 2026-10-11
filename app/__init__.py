@@ -1,0 +1,1 @@
+"""SoftBarber Application Package."""

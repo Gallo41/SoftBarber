@@ -25,3 +25,13 @@ out/
 *.sln
 .DS_Store
 Thumbs.db
+
+# Python & Pytest
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.db
+*.sqlite
+*.sqlite3
+
