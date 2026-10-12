@@ -14,6 +14,15 @@ from app.schemas.schedule import (
     AvailableSlotsResponse,
 )
 
+from app.schemas.customer import CustomerResponse
+from app.schemas.auth import (
+    AdminLoginRequest,
+    AdminTokenResponse,
+    ChangePinRequest,
+    CustomerLoginRequest,
+    CustomerTokenResponse,
+)
+
 __all__ = [
     "PackagePurchaseRequest",
     "CustomerPackageResponse",
@@ -24,6 +33,12 @@ __all__ = [
     "AppointmentResponse",
     "AvailableSlot",
     "AvailableSlotsResponse",
+    "CustomerResponse",
+    "AdminLoginRequest",
+    "AdminTokenResponse",
+    "ChangePinRequest",
+    "CustomerLoginRequest",
+    "CustomerTokenResponse",
 ]
 
 
