@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ADMIN_TOKEN_EXPIRE_HOURS: int = 12
     CUSTOMER_TOKEN_EXPIRE_DAYS: int = 30
+    DEFAULT_ADMIN_PIN: str = "1234"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
     model_config = SettingsConfigDict(
         env_file=".env",

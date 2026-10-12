@@ -5,7 +5,7 @@ import jwt
 
 from app.core.config import settings
 
-DEFAULT_ADMIN_PIN = "1234"
+DEFAULT_ADMIN_PIN = settings.DEFAULT_ADMIN_PIN
 
 
 def hash_pin(pin: str) -> str:

@@ -1,0 +1,78 @@
+services:
+  db:
+    image: mariadb:11.4
+    container_name: softbarber_db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-softbarber}
+      MARIADB_USER: ${MARIADB_USER:-softbarber}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-softbarber_secret}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-softbarber_root_secret}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - softbarber_network
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p${MARIADB_ROOT_PASSWORD:-softbarber_root_secret} || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: softbarber_backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-mysql+pymysql://softbarber:softbarber_secret@db:3306/softbarber}
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_change_in_production}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}
+      DEFAULT_ADMIN_PIN: ${DEFAULT_ADMIN_PIN:-1234}
+      AUTO_SEED: ${AUTO_SEED:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - softbarber_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    container_name: softbarber_frontend
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - softbarber_network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  mariadb_data:
+    driver: local
+
+networks:
+  softbarber_network:
+    driver: bridge
