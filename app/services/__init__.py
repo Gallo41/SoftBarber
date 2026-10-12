@@ -11,6 +11,11 @@ from app.services.appointment_service import (
     PackageExpiredError,
     AppointmentNotFoundError,
 )
+from app.services.schedule_service import (
+    ScheduleService,
+    ProfessionalNotFoundError,
+    ServiceNotFoundError,
+)
 
 __all__ = [
     "PackageService",
@@ -22,5 +27,9 @@ __all__ = [
     "SlotUnavailableError",
     "PackageExpiredError",
     "AppointmentNotFoundError",
+    "ScheduleService",
+    "ProfessionalNotFoundError",
+    "ServiceNotFoundError",
 ]
+
 
