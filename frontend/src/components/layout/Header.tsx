@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { Scissors, Sparkles, User, LayoutDashboard, Wallet, Download } from 'lucide-react';
+import {
+  Scissors,
+  Sparkles,
+  User,
+  LayoutDashboard,
+  Wallet,
+  Download,
+  Lock,
+  ShieldCheck,
+} from 'lucide-react';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { IOSInstallModal } from '../common/IOSInstallModal';
+import { useAuth } from '../../context/AuthContext';
+import { AdminPinModal } from '../auth/AdminPinModal';
 
 export type AppMode = 'client' | 'admin';
 
@@ -22,6 +33,18 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { isStandalone, isIOS, promptInstall } = usePWAInstall();
   const [showIOSModal, setShowIOSModal] = useState<boolean>(false);
+  const [showPinModal, setShowPinModal] = useState<boolean>(false);
+
+  // Consume useAuth safely
+  let auth: ReturnType<typeof useAuth> | undefined;
+  try {
+    auth = useAuth();
+  } catch {
+    auth = undefined;
+  }
+
+  const isAdminAuthenticated = auth?.isAdminAuthenticated ?? false;
+  const logoutAdmin = auth?.logoutAdmin ?? (() => {});
 
   const handleInstallClick = async () => {
     if (isIOS) {
@@ -32,6 +55,19 @@ export const Header: React.FC<HeaderProps> = ({
     if (result === 'manual_ios') {
       setShowIOSModal(true);
     }
+  };
+
+  const handleAdminModeClick = () => {
+    if (isAdminAuthenticated) {
+      onModeChange('admin');
+    } else {
+      setShowPinModal(true);
+    }
+  };
+
+  const handleLockAdmin = () => {
+    logoutAdmin();
+    onModeChange('client');
   };
 
   return (
@@ -69,6 +105,32 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
+          {/* Admin Session Badge (When Authenticated) */}
+          {isAdminAuthenticated && (
+            <div
+              data-testid="admin-active-badge"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold shadow-sm"
+              title="Sessão de Administrador ativa"
+            >
+              <ShieldCheck size={14} className="text-emerald-400 shrink-0" />
+              <span className="hidden md:inline">Admin Autenticado</span>
+            </div>
+          )}
+
+          {/* Bloquear Painel / Sair do Admin Button (When Authenticated) */}
+          {isAdminAuthenticated && (
+            <button
+              type="button"
+              onClick={handleLockAdmin}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-rose-400 hover:border-rose-500/30 text-xs font-semibold transition-all shadow-sm select-none"
+              title="Bloquear Painel e encerrar sessão de administrador"
+            >
+              <Lock size={14} />
+              <span className="hidden sm:inline">Bloquear Painel</span>
+              <span className="sm:hidden">Bloquear</span>
+            </button>
+          )}
+
           {/* Install App Button (When not standalone) */}
           {!isStandalone && (
             <button
@@ -104,7 +166,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               type="button"
-              onClick={() => onModeChange('admin')}
+              onClick={handleAdminModeClick}
               className={`
                 flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 select-none
                 ${
@@ -122,6 +184,16 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Admin Pin Touch Modal */}
+      <AdminPinModal
+        isOpen={showPinModal}
+        onClose={() => setShowPinModal(false)}
+        onSuccess={() => {
+          setShowPinModal(false);
+          onModeChange('admin');
+        }}
+      />
 
       {/* iOS Modal */}
       {showIOSModal && (
