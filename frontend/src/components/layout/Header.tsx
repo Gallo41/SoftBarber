@@ -1,5 +1,7 @@
-import React from 'react';
-import { Scissors, Sparkles, User, LayoutDashboard, Wallet } from 'lucide-react';
+import React, { useState } from 'react';
+import { Scissors, Sparkles, User, LayoutDashboard, Wallet, Download } from 'lucide-react';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
+import { IOSInstallModal } from '../common/IOSInstallModal';
 
 export type AppMode = 'client' | 'admin';
 
@@ -18,6 +20,20 @@ export const Header: React.FC<HeaderProps> = ({
   barbershopName = 'SoftBarber',
   className = '',
 }) => {
+  const { isStandalone, isIOS, promptInstall } = usePWAInstall();
+  const [showIOSModal, setShowIOSModal] = useState<boolean>(false);
+
+  const handleInstallClick = async () => {
+    if (isIOS) {
+      setShowIOSModal(true);
+      return;
+    }
+    const result = await promptInstall();
+    if (result === 'manual_ios') {
+      setShowIOSModal(true);
+    }
+  };
+
   return (
     <header
       className={`sticky top-0 z-30 w-full bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 ${className}`}
@@ -51,6 +67,19 @@ export const Header: React.FC<HeaderProps> = ({
                 {activeClientCredits} {activeClientCredits === 1 ? 'crédito' : 'créditos'}
               </span>
             </div>
+          )}
+
+          {/* Install App Button (When not standalone) */}
+          {!isStandalone && (
+            <button
+              type="button"
+              onClick={handleInstallClick}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 text-xs font-semibold transition-all shadow-sm select-none"
+              title="Instalar aplicativo SoftBarber no seu aparelho"
+            >
+              <Download size={15} />
+              <span className="hidden sm:inline">Instalar App</span>
+            </button>
           )}
 
           {/* Mode Switcher Buttons */}
@@ -93,6 +122,11 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       </div>
+
+      {/* iOS Modal */}
+      {showIOSModal && (
+        <IOSInstallModal isOpen={showIOSModal} onClose={() => setShowIOSModal(false)} />
+      )}
     </header>
   );
 };

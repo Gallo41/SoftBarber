@@ -28,7 +28,7 @@ import { BookingModal } from '../components/booking/BookingModal';
 import { PackageCard } from '../components/packages/PackageCard';
 import { WalletBalance } from '../components/packages/WalletBalance';
 import { AppointmentList } from '../components/appointments/AppointmentList';
-import { Button } from '../components/common/Button';
+import { Button, InstallAppBanner } from '../components/common';
 import { ClientNavTab } from '../components/layout/BottomNav';
 import { purchasePackage, getCustomerPackages } from '../api/packages';
 
@@ -460,7 +460,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
   };
 
   return (
-    <div className={`max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-12 ${className}`}>
+    <div className={`max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-mobile-nav md:pb-12 ${className}`}>
+      {/* PWA Install Banner */}
+      <InstallAppBanner className="mb-6" />
+
       {/* 1. Desktop Tab Bar Navigation */}
       <div className="hidden md:flex items-center justify-between border-b border-zinc-800 pb-4 mb-8">
         <div className="flex items-center gap-2">

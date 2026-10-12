@@ -247,7 +247,7 @@ export const AdminDashboard: React.FC = () => {
     DEFAULT_PROFESSIONALS[0];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-20 space-y-8 animate-in fade-in duration-150">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-mobile-nav md:pb-16 space-y-8 animate-in fade-in duration-150">
       {/* 1. Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
