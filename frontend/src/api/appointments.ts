@@ -46,3 +46,16 @@ export async function cancelAppointment(
   );
   return response.data;
 }
+
+/**
+ * Retrieves all appointments for a customer.
+ */
+export async function getCustomerAppointments(
+  customerId: number
+): Promise<AppointmentResponse[]> {
+  const response = await apiClient.get<AppointmentResponse[]>(
+    `/customers/${customerId}/appointments`
+  );
+  return response.data;
+}
+

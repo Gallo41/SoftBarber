@@ -31,6 +31,7 @@ import { AppointmentList } from '../components/appointments/AppointmentList';
 import { Button, InstallAppBanner } from '../components/common';
 import { ClientNavTab } from '../components/layout/BottomNav';
 import { purchasePackage, getCustomerPackages } from '../api/packages';
+import { getCustomerAppointments } from '../api/appointments';
 import { useAuth } from '../context/AuthContext';
 import { CustomerLoginModal } from '../components/auth/CustomerLoginModal';
 
@@ -145,31 +146,9 @@ const INITIAL_CUSTOMER_PACKAGES: CustomerPackageResponse[] = [
   },
 ];
 
-// Initial appointments for demo customer
-const INITIAL_APPOINTMENTS: AppointmentResponse[] = [
-  {
-    id: 501,
-    professional_id: 1,
-    customer_id: 1,
-    service_id: 1,
-    start_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T14:30:00',
-    end_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T15:00:00',
-    status: AppointmentStatus.BOOKED,
-    payment_type: PaymentType.PACKAGE_CREDIT,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 489,
-    professional_id: 2,
-    customer_id: 1,
-    service_id: 2,
-    start_time: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T11:00:00',
-    end_time: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T11:30:00',
-    status: AppointmentStatus.COMPLETED,
-    payment_type: PaymentType.PACKAGE_CREDIT,
-    created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
+// Initial appointments for demo customer (loaded dynamically from backend)
+const INITIAL_APPOINTMENTS: AppointmentResponse[] = [];
+
 
 export interface ClientPortalProps {
   activeTab: ClientNavTab;
@@ -227,10 +206,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
     message: string;
   } | null>(null);
 
-  // Fetch real packages from backend if available
+  // Fetch real packages and appointments from backend if available
   useEffect(() => {
     let isMounted = true;
-    async function loadBackendPackages() {
+    async function loadBackendData() {
       try {
         const pkgs = await getCustomerPackages(effectiveCustomerId);
         if (isMounted && pkgs && pkgs.length > 0) {
@@ -239,8 +218,17 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       } catch {
         // Keep initial mock packages if backend is offline
       }
+
+      try {
+        const apts = await getCustomerAppointments(effectiveCustomerId);
+        if (isMounted && apts) {
+          setAppointments(apts);
+        }
+      } catch {
+        // Keep initial appointments if backend is offline
+      }
     }
-    loadBackendPackages();
+    loadBackendData();
     return () => {
       isMounted = false;
     };
@@ -461,6 +449,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
     } else {
       showNotification('info', 'Agendamento cancelado com sucesso.');
     }
+
+    // Refresh packages and appointments from backend to guarantee sync
+    getCustomerPackages(effectiveCustomerId).then((pkgs) => {
+      if (pkgs) setCustomerPackages(pkgs);
+    }).catch(() => {});
+    getCustomerAppointments(effectiveCustomerId).then((apts) => {
+      if (apts) setAppointments(apts);
+    }).catch(() => {});
   };
 
   // Action to start booking directly using a service with active credits

@@ -72,3 +72,29 @@ def cancel_appointment(
         cancellation_reason=reason,
     )
 
+
+@router.get(
+    "/customers/{customer_id}/appointments",
+    response_model=list[AppointmentResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List all appointments for a customer",
+)
+@router.get(
+    "/api/v1/customers/{customer_id}/appointments",
+    response_model=list[AppointmentResponse],
+    status_code=status.HTTP_200_OK,
+    include_in_schema=False,
+)
+def get_customer_appointments(
+    customer_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Returns all appointments for the specified customer, ordered by start time.
+    """
+    return AppointmentService.get_customer_appointments(
+        db=db,
+        customer_id=customer_id,
+    )
+
+

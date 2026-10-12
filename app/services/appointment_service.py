@@ -301,4 +301,20 @@ class AppointmentService:
             db.rollback()
             raise
 
+    @staticmethod
+    def get_customer_appointments(
+        db: Session,
+        customer_id: int,
+    ) -> list[Appointment]:
+        """
+        Retrieves all appointments for a given customer, ordered by start_time descending.
+        """
+        stmt = (
+            select(Appointment)
+            .where(Appointment.customer_id == customer_id)
+            .order_by(Appointment.start_time.desc())
+        )
+        return list(db.scalars(stmt).all())
+
+
 

@@ -21,10 +21,12 @@ from app.models import (
     CustomerPackage,
     CustomerPackageBalance,
     Appointment,
+    AppointmentStatus,
     CreditLedgerTransaction,
 )
 from app.core.security import hash_pin, DEFAULT_ADMIN_PIN
 from app.services.package_service import PackageService
+from app.services.appointment_service import AppointmentService
 
 
 def run_seed():
@@ -180,6 +182,25 @@ def run_seed():
                 idempotency_key=str(uuid.uuid4()),
             )
             print("  [+] Carteira de creditos inicial creditada com 4 creditos de Corte!")
+
+        # 8. Agendamento Demonstrativo com Credito para o Cliente 1 (se ainda nao tiver)
+        existing_appt = db.query(Appointment).filter_by(customer_id=1, status=AppointmentStatus.BOOKED).first()
+        if not existing_appt:
+            cp = db.query(CustomerPackage).filter_by(customer_id=1).first()
+            if cp:
+                tomorrow = datetime.datetime.now().replace(hour=14, minute=30, second=0, microsecond=0) + datetime.timedelta(days=1)
+                try:
+                    appt = AppointmentService.book_with_credit(
+                        db=db,
+                        customer_package_id=cp.id,
+                        service_id=1,
+                        professional_id=1,
+                        start_time=tomorrow,
+                        idempotency_key=str(uuid.uuid4()),
+                    )
+                    print(f"  [+] Agendamento demonstrativo #{appt.id} criado para amanha as 14:30!")
+                except Exception as ex:
+                    print(f"  [!] Aviso ao criar agendamento demonstrativo: {ex}")
 
         print("\n[OK] Base de dados populada com sucesso!")
         print("[OK] SoftBarber pronto para execucao!")

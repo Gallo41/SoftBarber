@@ -688,3 +688,64 @@ def test_api_cancel_appointment(
     not_found_resp = test_client.post("/api/v1/appointments/888888/cancel")
     assert not_found_resp.status_code == 404
 
+
+def test_get_customer_appointments_service(
+    sample_customer_package: CustomerPackage,
+    sample_professional: Professional,
+    sample_service: Service,
+    db_session: Session,
+):
+    """Test AppointmentService.get_customer_appointments returns customer appointments ordered by start_time."""
+    start_time_1 = datetime.datetime.now().replace(microsecond=0) + datetime.timedelta(days=1)
+    start_time_2 = datetime.datetime.now().replace(microsecond=0) + datetime.timedelta(days=2)
+
+    appt1 = AppointmentService.book_with_credit(
+        db=db_session,
+        customer_package_id=sample_customer_package.id,
+        service_id=sample_service.id,
+        professional_id=sample_professional.id,
+        start_time=start_time_1,
+    )
+    appt2 = AppointmentService.book_with_credit(
+        db=db_session,
+        customer_package_id=sample_customer_package.id,
+        service_id=sample_service.id,
+        professional_id=sample_professional.id,
+        start_time=start_time_2,
+    )
+
+    results = AppointmentService.get_customer_appointments(
+        db=db_session,
+        customer_id=sample_customer_package.customer_id,
+    )
+    assert len(results) == 2
+    # Ordered descending by start_time
+    assert results[0].id == appt2.id
+    assert results[1].id == appt1.id
+
+
+def test_api_get_customer_appointments(
+    test_client: TestClient,
+    sample_customer_package: CustomerPackage,
+    sample_professional: Professional,
+    sample_service: Service,
+    db_session: Session,
+):
+    """Test GET /api/v1/customers/{customer_id}/appointments endpoint."""
+    start_time = datetime.datetime.now().replace(microsecond=0) + datetime.timedelta(days=1)
+    appt = AppointmentService.book_with_credit(
+        db=db_session,
+        customer_package_id=sample_customer_package.id,
+        service_id=sample_service.id,
+        professional_id=sample_professional.id,
+        start_time=start_time,
+    )
+
+    response = test_client.get(f"/api/v1/customers/{sample_customer_package.customer_id}/appointments")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+    assert any(item["id"] == appt.id for item in data)
+
+
