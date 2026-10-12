@@ -1,0 +1,48 @@
+# Git & Version Control
+.git
+.gitignore
+
+# Python cache & bytecode
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache
+.coverage
+htmlcov
+
+# Virtual environments
+.venv
+venv
+ENV
+env
+
+# Frontend build artifacts & dependencies
+node_modules
+frontend/node_modules
+frontend/dist
+
+# Databases & local persistent files
+*.sqlite3
+*.db
+mariadb_data
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Superpowers and agent metadata
+.superpowers
+.agent
+.agents
+.gemini
+
+# IDE & Editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Temporary & log files
+*.log
