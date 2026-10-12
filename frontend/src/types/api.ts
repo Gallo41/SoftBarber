@@ -179,3 +179,37 @@ export interface CreditLedgerTransactionResponse {
   notes?: string | null;
   created_at: string;
 }
+
+// ==========================================
+// Auth Schemas & DTOs
+// ==========================================
+
+export interface AdminLoginRequest {
+  pin: string;
+}
+
+export interface AdminTokenResponse {
+  access_token: string;
+  token_type: string;
+  role: string;
+  expires_in: number;
+}
+
+export interface ChangePinRequest {
+  old_pin: string;
+  new_pin: string;
+}
+
+export interface CustomerLoginRequest {
+  phone: string;
+  name?: string;
+  email?: string;
+}
+
+export interface CustomerTokenResponse {
+  access_token: string;
+  token_type: string;
+  role: string;
+  customer: Customer;
+}
+
