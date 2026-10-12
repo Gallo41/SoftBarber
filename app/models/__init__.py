@@ -1,4 +1,4 @@
-from app.models.settings import BusinessSettings
+from app.models.business_settings import BusinessSettings
 from app.models.customer import Customer
 from app.models.professional import Professional, ProfessionalService
 from app.models.service import Service

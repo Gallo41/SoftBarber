@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     OPEN_TIME: str = "08:00:00"
     CLOSE_TIME: str = "20:00:00"
 
+    # JWT & Authentication settings
+    JWT_SECRET: str = "softbarber-dev-secret-key-change-in-production"
+    JWT_ALGORITHM: str = "HS256"
+    ADMIN_TOKEN_EXPIRE_HOURS: int = 12
+    CUSTOMER_TOKEN_EXPIRE_DAYS: int = 30
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
