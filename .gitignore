@@ -35,3 +35,5 @@ __pycache__/
 *.sqlite
 *.sqlite3
 
+# Superpowers scratch
+.superpowers/
