@@ -23,6 +23,7 @@ from app.models import (
     Appointment,
     CreditLedgerTransaction,
 )
+from app.core.security import hash_pin, DEFAULT_ADMIN_PIN
 from app.services.package_service import PackageService
 
 
@@ -45,13 +46,17 @@ def run_seed():
         if not settings:
             settings = BusinessSettings(
                 business_name="SoftBarber",
+                admin_pin_hash=hash_pin(DEFAULT_ADMIN_PIN),
                 open_time=datetime.time(8, 0),
                 close_time=datetime.time(20, 0),
                 cancellation_window_hours=2,
                 default_slot_interval_minutes=30,
             )
             db.add(settings)
-            print("  [+] Configuracoes do negocio criadas")
+            print("  [+] Configuracoes do negocio criadas (PIN padrao: 1234)")
+        elif not settings.admin_pin_hash:
+            settings.admin_pin_hash = hash_pin(DEFAULT_ADMIN_PIN)
+            print("  [+] PIN admin padrao (1234) atualizado nas configuracoes existentes")
 
         # 2. Clientes
         customer1 = db.query(Customer).filter_by(id=1).first()
