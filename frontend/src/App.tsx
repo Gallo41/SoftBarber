@@ -1,24 +1,41 @@
-import React from 'react';
-import { Scissors, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Header, AppMode } from './components/layout/Header';
+import { BottomNav, ClientNavTab } from './components/layout/BottomNav';
+import { ClientPortal } from './pages/ClientPortal';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 export const App: React.FC = () => {
+  const [activeMode, setActiveMode] = useState<AppMode>('client');
+  const [clientTab, setClientTab] = useState<ClientNavTab>('booking');
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-6">
-      <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-xl text-center space-y-4">
-        <div className="inline-flex p-3 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-500 mb-2">
-          <Scissors className="w-8 h-8" />
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
-          <span>SoftBarber</span>
-          <Sparkles className="w-5 h-5 text-amber-400" />
-        </h1>
-        <p className="text-zinc-400 text-sm">
-          Sistema Inteligente de Agendamentos e Gestão de Pacotes de Barbearia.
-        </p>
-        <div className="pt-4 border-t border-zinc-800 text-xs text-zinc-500">
-          Frontend Vite + React + TypeScript + Tailwind CSS pronto para integração.
-        </div>
-      </div>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col antialiased selection:bg-amber-500 selection:text-zinc-950">
+      {/* Top Application Header */}
+      <Header
+        activeMode={activeMode}
+        onModeChange={(mode) => setActiveMode(mode)}
+        barbershopName="SoftBarber"
+      />
+
+      {/* Main Content Area */}
+      <main className="flex-1">
+        {activeMode === 'client' ? (
+          <ClientPortal
+            activeTab={clientTab}
+            onTabChange={(tab) => setClientTab(tab)}
+          />
+        ) : (
+          <AdminDashboard />
+        )}
+      </main>
+
+      {/* Mobile Bottom Navigation (Only in Client Mode) */}
+      {activeMode === 'client' && (
+        <BottomNav
+          activeTab={clientTab}
+          onTabChange={(tab) => setClientTab(tab)}
+        />
+      )}
     </div>
   );
 };
