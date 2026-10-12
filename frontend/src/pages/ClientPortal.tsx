@@ -31,6 +31,8 @@ import { AppointmentList } from '../components/appointments/AppointmentList';
 import { Button, InstallAppBanner } from '../components/common';
 import { ClientNavTab } from '../components/layout/BottomNav';
 import { purchasePackage, getCustomerPackages } from '../api/packages';
+import { useAuth } from '../context/AuthContext';
+import { CustomerLoginModal } from '../components/auth/CustomerLoginModal';
 
 // Default initial mock services
 const DEFAULT_SERVICES: Service[] = [
@@ -182,6 +184,19 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
   customerId = 1,
   className = '',
 }) => {
+  // Consume useAuth safely
+  let auth: ReturnType<typeof useAuth> | undefined;
+  try {
+    auth = useAuth();
+  } catch {
+    auth = undefined;
+  }
+  const currentCustomer = auth?.currentCustomer ?? null;
+  const logoutCustomer = auth?.logoutCustomer ?? (() => {});
+
+  // Reactive customer ID sync: uses current authenticated customer or fallback prop
+  const effectiveCustomerId = currentCustomer?.id ?? customerId ?? 1;
+
   // Master lists
   const [services] = useState<Service[]>(DEFAULT_SERVICES);
   const [professionals] = useState<Professional[]>(DEFAULT_PROFESSIONALS);
@@ -204,6 +219,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
   );
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // Notifications feedback
   const [notification, setNotification] = useState<{
@@ -216,7 +232,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
     let isMounted = true;
     async function loadBackendPackages() {
       try {
-        const pkgs = await getCustomerPackages(customerId);
+        const pkgs = await getCustomerPackages(effectiveCustomerId);
         if (isMounted && pkgs && pkgs.length > 0) {
           setCustomerPackages(pkgs);
         }
@@ -228,7 +244,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [customerId]);
+  }, [effectiveCustomerId]);
 
   // Lookup maps for IDs to display names
   const servicesMap = useMemo(() => {
@@ -307,7 +323,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
       try {
         const result = await purchasePackage({
-          customer_id: customerId,
+          customer_id: effectiveCustomerId,
           package_id: packageId,
         });
 
@@ -320,7 +336,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         // Fallback simulate package addition locally
         const simulated: CustomerPackageResponse = {
           id: Date.now(),
-          customer_id: customerId,
+          customer_id: effectiveCustomerId,
           package_id: packageId,
           status: PackageStatus.ACTIVE,
           purchased_at: new Date().toISOString(),
@@ -463,6 +479,66 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
     <div className={`max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-mobile-nav md:pb-12 ${className}`}>
       {/* PWA Install Banner */}
       <InstallAppBanner className="mb-6" />
+
+      {/* Customer Identification Banner */}
+      {currentCustomer ? (
+        <div className="mb-6 p-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-in fade-in duration-150">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 font-bold shrink-0">
+              <User size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-zinc-100 text-sm sm:text-base">
+                  Olá, {currentCustomer.name}!
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[11px] font-semibold">
+                  Identificado
+                </span>
+              </div>
+              {currentCustomer.phone && (
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  {currentCustomer.phone}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={logoutCustomer}
+            className="text-xs text-zinc-400 hover:text-rose-400 hover:border-rose-500/30"
+          >
+            Trocar conta / Sair
+          </Button>
+        </div>
+      ) : (
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-zinc-900 to-zinc-900 border border-amber-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold shrink-0">
+              <User size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-zinc-100 text-sm sm:text-base">
+                Identificação do Cliente
+              </h3>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                Identifique-se com seu WhatsApp para ver seus pacotes e créditos acumulados
+              </p>
+            </div>
+          </div>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsLoginModalOpen(true)}
+            className="w-full sm:w-auto shrink-0"
+          >
+            Entrar / Identificar
+          </Button>
+        </div>
+      )}
 
       {/* 1. Desktop Tab Bar Navigation */}
       <div className="hidden md:flex items-center justify-between border-b border-zinc-800 pb-4 mb-8">
@@ -946,6 +1022,15 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           />
         </div>
       )}
+
+      {/* Customer Login Modal */}
+      <CustomerLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSuccess={(c) => {
+          showNotification('success', `Bem-vindo(a), ${c.name}!`);
+        }}
+      />
     </div>
   );
 };

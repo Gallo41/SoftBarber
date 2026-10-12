@@ -3,8 +3,9 @@ import { Header, AppMode } from './components/layout/Header';
 import { BottomNav, ClientNavTab } from './components/layout/BottomNav';
 import { ClientPortal } from './pages/ClientPortal';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AuthProvider } from './context/AuthContext';
 
-export const App: React.FC = () => {
+export const AppContent: React.FC = () => {
   const [activeMode, setActiveMode] = useState<AppMode>('client');
   const [clientTab, setClientTab] = useState<ClientNavTab>('booking');
 
@@ -37,6 +38,14 @@ export const App: React.FC = () => {
         />
       )}
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 
