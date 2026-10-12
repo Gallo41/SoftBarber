@@ -34,8 +34,9 @@ COPY app/ /app/app/
 COPY seed.py /app/seed.py
 COPY docker/entrypoint.sh /app/docker/entrypoint.sh
 
-# Garante permissões de execução e propriedade para appuser
-RUN chmod +x /app/docker/entrypoint.sh && \
+# Garante que quebras de linha Windows (CRLF) sejam removidas, permissões de execução e propriedade para appuser
+RUN sed -i 's/\r$//' /app/docker/entrypoint.sh && \
+    chmod +x /app/docker/entrypoint.sh && \
     chown -R appuser:appuser /app
 
 # Execução como usuário não-root
