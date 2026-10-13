@@ -4,7 +4,6 @@ import {
   Package,
   Wallet,
   CalendarCheck2,
-  Sparkles,
   CheckCircle2,
   AlertCircle,
   User,
@@ -28,7 +27,7 @@ import { BookingModal } from '../components/booking/BookingModal';
 import { PackageCard } from '../components/packages/PackageCard';
 import { WalletBalance } from '../components/packages/WalletBalance';
 import { AppointmentList } from '../components/appointments/AppointmentList';
-import { Button, InstallAppBanner } from '../components/common';
+import { Button, InstallAppBanner, Badge } from '../components/common';
 import { ClientNavTab } from '../components/layout/BottomNav';
 import { purchasePackage, getCustomerPackages } from '../api/packages';
 import { getCustomerAppointments } from '../api/appointments';
@@ -148,7 +147,6 @@ const INITIAL_CUSTOMER_PACKAGES: CustomerPackageResponse[] = [
 
 // Initial appointments for demo customer (loaded dynamically from backend)
 const INITIAL_APPOINTMENTS: AppointmentResponse[] = [];
-
 
 export interface ClientPortalProps {
   activeTab: ClientNavTab;
@@ -478,22 +476,22 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
       {/* Customer Identification Banner */}
       {currentCustomer ? (
-        <div className="mb-6 p-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-in fade-in duration-150">
+        <div className="mb-6 p-4 card-paper flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-stamp-sm animate-in fade-in duration-150">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 font-bold shrink-0">
-              <User size={20} />
+            <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink font-bold shrink-0 shadow-stamp-sm">
+              <User size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-zinc-100 text-sm sm:text-base">
+                <span className="font-display text-base sm:text-lg text-ink">
                   Olá, {currentCustomer.name}!
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[11px] font-semibold">
+                <Badge variant="success" size="sm">
                   Identificado
-                </span>
+                </Badge>
               </div>
               {currentCustomer.phone && (
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <p className="font-sign uppercase tracking-wider text-xs text-ink-muted mt-0.5">
                   {currentCustomer.phone}
                 </p>
               )}
@@ -504,22 +502,22 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             variant="outline"
             size="sm"
             onClick={logoutCustomer}
-            className="text-xs text-zinc-400 hover:text-rose-400 hover:border-rose-500/30"
+            className="text-xs text-ink-soft hover:text-pole-red hover:border-pole-red"
           >
             Trocar conta / Sair
           </Button>
         </div>
       ) : (
-        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-zinc-900 to-zinc-900 border border-amber-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-200">
+        <div className="mb-6 p-4 card-paper bg-paper-dark flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-stamp-sm animate-in fade-in duration-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold shrink-0">
-              <User size={20} />
+            <div className="w-10 h-10 rounded-sm bg-card border-[1.5px] border-ink flex items-center justify-center text-pole-red font-bold shrink-0 shadow-stamp-sm">
+              <User size={18} />
             </div>
             <div>
-              <h3 className="font-bold text-zinc-100 text-sm sm:text-base">
+              <h3 className="font-display text-base sm:text-lg text-ink">
                 Identificação do Cliente
               </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-0.5">
                 Identifique-se com seu WhatsApp para ver seus pacotes e créditos acumulados
               </p>
             </div>
@@ -537,21 +535,21 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       )}
 
       {/* 1. Desktop Tab Bar Navigation */}
-      <div className="hidden md:flex items-center justify-between border-b border-zinc-800 pb-4 mb-8">
+      <div className="hidden md:flex items-center justify-between border-b-[1.5px] border-ink pb-3 mb-8">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => onTabChange('booking')}
             className={`
-              flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
               ${
                 activeTab === 'booking'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900'
+                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
+                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
               }
             `}
           >
-            <CalendarPlus size={18} />
+            <CalendarPlus size={16} />
             <span>Agendar Horário</span>
           </button>
 
@@ -559,15 +557,15 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             type="button"
             onClick={() => onTabChange('packages')}
             className={`
-              flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
               ${
                 activeTab === 'packages'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900'
+                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
+                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
               }
             `}
           >
-            <Package size={18} />
+            <Package size={16} />
             <span>Pacotes Promocionais</span>
           </button>
 
@@ -575,24 +573,24 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             type="button"
             onClick={() => onTabChange('wallet')}
             className={`
-              flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
               ${
                 activeTab === 'wallet'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900'
+                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
+                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
               }
             `}
           >
-            <Wallet size={18} />
+            <Wallet size={16} />
             <span>Minha Carteira</span>
             {totalActiveCredits > 0 && (
               <span
                 className={`
-                  px-2 py-0.5 rounded-full text-xs font-bold
+                  px-2 py-0.5 rounded-sm text-xs font-bold font-sign
                   ${
                     activeTab === 'wallet'
-                      ? 'bg-zinc-950 text-amber-400'
-                      : 'bg-amber-500/20 text-amber-300'
+                      ? 'bg-card text-ink'
+                      : 'bg-pole-red text-card'
                   }
                 `}
               >
@@ -605,24 +603,24 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             type="button"
             onClick={() => onTabChange('appointments')}
             className={`
-              flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
               ${
                 activeTab === 'appointments'
-                  ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20'
-                  : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900'
+                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
+                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
               }
             `}
           >
-            <CalendarCheck2 size={18} />
+            <CalendarCheck2 size={16} />
             <span>Meus Horários</span>
             {upcomingCount > 0 && (
               <span
                 className={`
-                  px-2 py-0.5 rounded-full text-xs font-bold
+                  px-2 py-0.5 rounded-sm text-xs font-bold font-sign
                   ${
                     activeTab === 'appointments'
-                      ? 'bg-zinc-950 text-amber-400'
-                      : 'bg-zinc-800 text-zinc-300'
+                      ? 'bg-card text-ink'
+                      : 'bg-paper-deep text-ink'
                   }
                 `}
               >
@@ -634,10 +632,9 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
         {/* Quick balance badge on right */}
         {totalActiveCredits > 0 && (
-          <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <Sparkles size={14} className="text-amber-400" />
+          <div className="sign-label flex items-center gap-1.5 text-xs text-ink">
             <span>Saldo:</span>
-            <span className="font-bold text-amber-400">
+            <span className="font-display text-base text-pole-red">
               {totalActiveCredits} {totalActiveCredits === 1 ? 'crédito' : 'créditos'}
             </span>
           </div>
@@ -648,28 +645,28 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       {notification && (
         <div
           className={`
-            mb-6 p-4 rounded-xl border flex items-center justify-between gap-3 text-sm animate-in fade-in duration-200
+            mb-6 p-4 rounded-sm border-[1.5px] border-l-4 flex items-center justify-between gap-3 text-sm animate-in fade-in duration-200 shadow-stamp-sm
             ${
               notification.type === 'success'
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                ? 'bg-moss-tint border-moss border-l-moss text-moss'
                 : notification.type === 'error'
-                ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                ? 'bg-pole-red-tint border-pole-red border-l-pole-red text-pole-red'
+                : 'bg-pole-blue-tint border-pole-blue border-l-pole-blue text-pole-blue'
             }
           `}
         >
           <div className="flex items-center gap-2.5">
             {notification.type === 'success' ? (
-              <CheckCircle2 size={18} className="shrink-0 text-emerald-400" />
+              <CheckCircle2 size={18} className="shrink-0 text-moss" />
             ) : (
-              <AlertCircle size={18} className="shrink-0 text-amber-400" />
+              <AlertCircle size={18} className="shrink-0" />
             )}
-            <span>{notification.message}</span>
+            <span className="font-medium">{notification.message}</span>
           </div>
           <button
             type="button"
             onClick={() => setNotification(null)}
-            className="text-xs opacity-70 hover:opacity-100 underline shrink-0"
+            className="font-sign uppercase tracking-wider text-xs opacity-75 hover:opacity-100 underline shrink-0"
           >
             Fechar
           </button>
@@ -683,10 +680,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         <div className="space-y-8 animate-in fade-in duration-150">
           {/* Header Intro */}
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 tracking-tight">
+            <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
               Agendamento de Horário
             </h1>
-            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+            <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-2xl font-medium">
               Escolha seu barbeiro de preferência, selecione o serviço e garanta seu horário.
               Se possuir créditos de pacote, você poderá utilizá-los no próximo passo.
             </p>
@@ -694,8 +691,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
           {/* Step 1: Professional Selector */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-zinc-200">
-              <User size={16} className="text-amber-400" />
+            <div className="sign-label flex items-center gap-2 text-ink text-sm">
+              <User size={14} className="text-pole-red" />
               <span>1. Escolha o Profissional</span>
             </div>
 
@@ -712,32 +709,32 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                       setSelectedSlot(null);
                     }}
                     className={`
-                      p-4 rounded-xl border text-left flex items-center justify-between transition-all duration-150 select-none
+                      p-4 card-paper text-left flex items-center justify-between transition-all select-none
                       ${
                         isSelected
-                          ? 'bg-zinc-900 border-amber-500 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/40'
-                          : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900'
+                          ? 'border-pole-red shadow-stamp ring-1 ring-pole-red'
+                          : 'shadow-stamp-sm hover:shadow-stamp hover:border-ink'
                       }
                     `}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                        className={`w-10 h-10 rounded-sm border-[1.5px] border-ink flex items-center justify-center font-display text-base ${
                           isSelected
-                            ? 'bg-amber-500 text-zinc-950'
-                            : 'bg-zinc-800 text-zinc-300'
+                            ? 'bg-pole-red text-card'
+                            : 'bg-paper-dark text-ink'
                         }`}
                       >
                         {prof.name.charAt(0)}
                       </div>
                       <div>
-                        <div className="font-semibold text-zinc-100">{prof.name}</div>
-                        <div className="text-xs text-zinc-400">Barbeiro Especialista</div>
+                        <div className="font-display text-base text-ink">{prof.name}</div>
+                        <div className="font-sign uppercase tracking-wider text-xs text-ink-muted">Barbeiro Especialista</div>
                       </div>
                     </div>
 
                     {isSelected && (
-                      <CheckCircle2 size={18} className="text-amber-400 shrink-0" />
+                      <CheckCircle2 size={18} className="text-pole-red shrink-0" />
                     )}
                   </button>
                 );
@@ -748,11 +745,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           {/* Step 2: Service Selection */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm font-semibold text-zinc-200">
-                <Sparkles size={16} className="text-amber-400" />
+              <div className="sign-label flex items-center gap-2 text-ink text-sm">
                 <span>2. Selecione o Serviço</span>
               </div>
-              <span className="text-xs text-zinc-400">
+              <span className="font-sign uppercase tracking-wider text-xs text-ink-muted">
                 {services.length} opções disponíveis
               </span>
             </div>
@@ -780,20 +776,20 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
           {/* Step 3: Date & Slot Picker */}
           {selectedService && (
-            <div className="space-y-4 pt-4 border-t border-zinc-800/80">
+            <div className="space-y-4 pt-4 border-t-[1.5px] border-ink">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-base sm:text-lg font-bold text-zinc-100">
+                  <h2 className="font-display text-xl text-ink">
                     3. Escolha o Dia e Horário Disponível
                   </h2>
-                  <p className="text-xs text-zinc-400 mt-0.5">
+                  <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-0.5">
                     Atendimento com {selectedProfessional.name} • {selectedService.name} (
                     {selectedService.duration_minutes} min)
                   </p>
                 </div>
               </div>
 
-              <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 sm:p-6">
+              <div className="card-paper p-5 sm:p-6 shadow-stamp-sm">
                 <SlotPicker
                   professionalId={selectedProfessional.id}
                   serviceId={selectedService.id}
@@ -812,17 +808,17 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
               {/* Booking Confirmation Action Bar */}
               {selectedSlot && (
-                <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in duration-200">
+                <div className="p-4 sm:p-5 card-paper bg-card border-pole-red flex flex-col sm:flex-row items-center justify-between gap-4 shadow-stamp animate-in fade-in duration-150">
                   <div className="flex items-center gap-3 text-center sm:text-left">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500 text-zinc-950 flex items-center justify-center font-bold shrink-0">
+                    <div className="w-10 h-10 rounded-sm bg-pole-red text-card border border-ink flex items-center justify-center font-bold shrink-0 shadow-stamp-sm">
                       <CalendarCheck2 size={20} />
                     </div>
                     <div>
-                      <h4 className="text-sm sm:text-base font-bold text-zinc-100">
+                      <h4 className="font-display text-base text-ink">
                         Horário Selecionado:{' '}
-                        <span className="text-amber-400">{selectedSlot.start_time}</span>
+                        <span className="text-pole-red font-sign uppercase">{selectedSlot.start_time}</span>
                       </h4>
-                      <p className="text-xs text-zinc-400">
+                      <p className="font-sign uppercase tracking-wider text-xs text-ink-soft">
                         {selectedService.name} com {selectedProfessional.name} em {selectedDate}
                       </p>
                     </div>
@@ -871,24 +867,23 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       {activeTab === 'packages' && (
         <div className="space-y-8 animate-in fade-in duration-150">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold mb-2">
-              <Sparkles size={13} />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-paper-dark border-[1.5px] border-ink text-ink font-sign uppercase tracking-wider text-xs font-semibold mb-2 shadow-stamp-sm">
               <span>Economize até 30% em seus cortes</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 tracking-tight">
+            <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
               Pacotes Promocionais
             </h1>
-            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+            <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-2xl font-medium">
               Compre antecipado e acumule créditos na sua carteira digital. Seus créditos
               são debitados automaticamente ao agendar e estornados se você cancelar com mais de 2 horas de antecedência.
             </p>
           </div>
 
           {/* Guarantee Pill */}
-          <div className="p-4 rounded-xl bg-zinc-900/70 border border-zinc-800 flex items-center gap-3 text-xs sm:text-sm text-zinc-300">
-            <ShieldCheck size={24} className="text-amber-400 shrink-0" />
+          <div className="p-4 card-paper bg-paper-dark flex items-center gap-3 text-xs sm:text-sm text-ink shadow-stamp-sm">
+            <ShieldCheck size={24} className="text-pole-red shrink-0" />
             <div>
-              <span className="font-semibold text-zinc-100">
+              <span className="font-display text-base text-ink">
                 Garantia de Reembolso Automático:
               </span>{' '}
               Se precisar desmarcar com ao menos 2h de antecedência, seu crédito retorna
@@ -917,10 +912,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         <div className="space-y-8 animate-in fade-in duration-150">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 tracking-tight">
+              <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
                 Minha Carteira de Créditos
               </h1>
-              <p className="text-sm text-zinc-400 mt-1 max-w-xl">
+              <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-xl font-medium">
                 Acompanhe o saldo dos seus pacotes adquiridos, datas de validade e use seus créditos para novos agendamentos.
               </p>
             </div>
@@ -935,43 +930,43 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           </div>
 
           {/* Wallet Overview Summary Card */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-zinc-900 border border-zinc-800 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-              <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
+          <div className="p-5 sm:p-6 card-paper grid grid-cols-1 sm:grid-cols-3 gap-4 shadow-stamp-sm">
+            <div className="p-4 rounded-sm bg-paper-dark border-[1.5px] border-ink shadow-sm">
+              <span className="sign-label">
                 Total de Créditos Ativos
               </span>
-              <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1">
+              <div className="font-display text-3xl sm:text-4xl text-pole-red mt-1">
                 {totalActiveCredits}
               </div>
-              <span className="text-xs text-zinc-400 mt-0.5 block">
+              <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-0.5 block">
                 Disponíveis para agendamento imediato
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-              <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
+            <div className="p-4 rounded-sm bg-paper-dark border-[1.5px] border-ink shadow-sm">
+              <span className="sign-label">
                 Pacotes Ativos
               </span>
-              <div className="text-2xl sm:text-3xl font-extrabold text-zinc-100 mt-1">
+              <div className="font-display text-3xl sm:text-4xl text-ink mt-1">
                 {
                   customerPackages.filter(
                     (p) => p.status === PackageStatus.ACTIVE
                   ).length
                 }
               </div>
-              <span className="text-xs text-zinc-400 mt-0.5 block">
+              <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-0.5 block">
                 Vinculados ao seu perfil de cliente
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
-              <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
+            <div className="p-4 rounded-sm bg-paper-dark border-[1.5px] border-ink shadow-sm">
+              <span className="sign-label">
                 Agendamentos Futuros
               </span>
-              <div className="text-2xl sm:text-3xl font-extrabold text-zinc-100 mt-1">
+              <div className="font-display text-3xl sm:text-4xl text-ink mt-1">
                 {upcomingCount}
               </div>
-              <span className="text-xs text-zinc-400 mt-0.5 block">
+              <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-0.5 block">
                 Horários reservados no salão
               </span>
             </div>
@@ -979,7 +974,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
           {/* Wallet Balance Details */}
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-zinc-100 mb-4">
+            <h2 className="font-display text-xl text-ink mb-4">
               Pacotes e Saldos por Serviço
             </h2>
             <WalletBalance
@@ -999,10 +994,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       {activeTab === 'appointments' && (
         <div className="space-y-8 animate-in fade-in duration-150">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 tracking-tight">
+            <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
               Meus Agendamentos
             </h1>
-            <p className="text-sm text-zinc-400 mt-1 max-w-xl">
+            <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-xl font-medium">
               Consulte seus atendimentos futuros e histórico de cortes. Você pode cancelar
               com estorno automático até 2 horas antes do horário marcado.
             </p>

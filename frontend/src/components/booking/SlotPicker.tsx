@@ -146,12 +146,12 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
     <div className={`space-y-5 ${className}`}>
       {/* 1. Date Selector (7 Days Horizontal Scroller) */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 text-sm font-semibold text-zinc-200">
-            <CalendarIcon size={16} className="text-amber-400" />
+        <div className="flex items-center justify-between mb-2">
+          <div className="sign-label flex items-center gap-1.5 text-ink">
+            <CalendarIcon size={14} className="text-pole-red" />
             <span>Selecione a Data</span>
           </div>
-          <span className="text-xs text-zinc-400">Próximos 7 dias</span>
+          <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted">Próximos 7 dias</span>
         </div>
 
         <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
@@ -164,29 +164,29 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
                 type="button"
                 onClick={() => handleDateClick(day.dateString)}
                 className={`
-                  flex flex-col items-center justify-center py-2.5 px-1 rounded-xl
+                  flex flex-col items-center justify-center py-2 px-1 rounded-sm
                   transition-all duration-150 select-none text-center
-                  border
+                  border-[1.5px]
                   ${
                     isSelected
-                      ? 'bg-amber-500 text-zinc-950 font-bold border-amber-400 shadow-md shadow-amber-500/10 ring-2 ring-amber-400/30'
-                      : 'bg-zinc-900/90 text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 hover:text-white'
+                      ? 'bg-ink text-card border-ink shadow-stamp-sm font-bold'
+                      : 'bg-card text-ink border-ink hover:bg-paper-dark'
                   }
                 `}
               >
                 <span
-                  className={`text-[10px] sm:text-xs font-medium uppercase tracking-wider ${
-                    isSelected ? 'text-zinc-950' : 'text-zinc-400'
+                  className={`font-sign uppercase tracking-wider text-[10px] ${
+                    isSelected ? 'text-card' : 'text-ink-muted'
                   }`}
                 >
                   {day.isToday ? 'Hoje' : day.dayOfWeek}
                 </span>
-                <span className="text-base sm:text-lg font-bold mt-0.5 leading-none">
+                <span className="font-display text-base sm:text-xl mt-0.5 leading-none">
                   {day.dayNumber}
                 </span>
                 <span
-                  className={`text-[9px] sm:text-[10px] mt-0.5 ${
-                    isSelected ? 'text-zinc-900/80 font-semibold' : 'text-zinc-500'
+                  className={`font-sign uppercase text-[9px] mt-0.5 ${
+                    isSelected ? 'text-card' : 'text-ink-soft'
                   }`}
                 >
                   {day.monthName}
@@ -199,8 +199,8 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
 
       {/* 2. Slots Header & Refresh */}
       <div className="flex items-center justify-between pt-1">
-        <div className="flex items-center gap-2 text-sm font-semibold text-zinc-200">
-          <Clock size={16} className="text-amber-400" />
+        <div className="sign-label flex items-center gap-1.5 text-ink">
+          <Clock size={14} className="text-pole-red" />
           <span>Horários Disponíveis</span>
         </div>
 
@@ -209,7 +209,7 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
           onClick={handleRefresh}
           disabled={isLoading}
           title="Atualizar horários"
-          className="text-xs text-zinc-400 hover:text-amber-400 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+          className="font-sign uppercase tracking-wider text-xs text-ink-muted hover:text-ink transition-colors flex items-center gap-1.5 disabled:opacity-50"
         >
           <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
           <span>Atualizar</span>
@@ -219,37 +219,37 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
       {/* 3. Slot Grid / Loading / Empty / Error States */}
       <div>
         {isLoading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 py-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 py-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-11 rounded-lg bg-zinc-900/80 border border-zinc-800/80 animate-pulse flex items-center justify-center"
+                className="h-10 rounded-sm bg-paper-dark border border-ink-line animate-pulse flex items-center justify-center"
               >
-                <div className="h-4 w-12 bg-zinc-800 rounded" />
+                <div className="h-4 w-12 bg-paper-deep rounded-sm" />
               </div>
             ))}
           </div>
         ) : error ? (
-          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-center flex flex-col items-center justify-center gap-2">
-            <AlertCircle size={24} className="text-rose-400" />
-            <p className="text-xs text-rose-300 font-medium">{error}</p>
+          <div className="p-4 rounded-sm bg-pole-red-tint border-[1.5px] border-pole-red text-center flex flex-col items-center justify-center gap-2">
+            <AlertCircle size={24} className="text-pole-red" />
+            <p className="text-xs text-pole-red font-medium">{error}</p>
             <Button size="sm" variant="outline" onClick={handleRefresh} className="mt-1">
               Tentar Novamente
             </Button>
           </div>
         ) : slots.length === 0 ? (
-          <div className="p-8 rounded-xl bg-zinc-900/60 border border-zinc-800/80 text-center flex flex-col items-center justify-center">
-            <Clock size={28} className="text-zinc-500 mb-2" />
-            <p className="text-sm font-medium text-zinc-300">
+          <div className="p-8 rounded-sm card-paper text-center flex flex-col items-center justify-center shadow-stamp-sm">
+            <Clock size={28} className="text-ink-muted mb-2" strokeWidth={1.75} />
+            <p className="font-display text-base text-ink">
               Nenhum horário disponível para esta data.
             </p>
-            <p className="text-xs text-zinc-500 mt-1 max-w-xs">
+            <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-1 max-w-xs">
               Todos os horários estão preenchidos ou o profissional não atende neste dia.
               Tente selecionar outra data acima.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {slots.map((slot) => {
               const active = isSlotActive(slot);
               const formattedTime = formatSlotTime(slot.start_time);
@@ -260,12 +260,12 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
                   type="button"
                   onClick={() => onSelectSlot(slot, activeDate)}
                   className={`
-                    py-2.5 px-3 rounded-lg text-sm font-semibold transition-all duration-150 select-none
-                    border flex items-center justify-center
+                    py-2 px-3 rounded-sm font-sign uppercase tracking-wider text-xs sm:text-sm font-semibold transition-all duration-150 select-none
+                    border-[1.5px] flex items-center justify-center
                     ${
                       active
-                        ? 'bg-amber-500 text-zinc-950 border-amber-400 font-bold shadow-md shadow-amber-500/20 ring-2 ring-amber-400/40'
-                        : 'bg-zinc-900 text-zinc-200 border-zinc-800 hover:border-amber-500/60 hover:bg-zinc-850 hover:text-amber-400'
+                        ? 'bg-pole-red text-card border-ink shadow-stamp-sm font-bold'
+                        : 'bg-card text-ink border-ink hover:bg-paper-dark shadow-stamp-sm active:shadow-none'
                     }
                   `}
                 >

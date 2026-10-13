@@ -16,21 +16,21 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-zinc-950 font-semibold focus:ring-amber-400 shadow-sm shadow-amber-500/10',
+    'bg-pole-red hover:bg-pole-red-dark text-card border-[1.5px] border-ink shadow-stamp-sm active:shadow-none active:translate-x-[2px] active:translate-y-[2px] focus-visible:ring-pole-red',
   outline:
-    'border border-zinc-700 hover:border-amber-500/80 hover:bg-zinc-800/60 text-zinc-200 hover:text-amber-400 focus:ring-amber-400',
+    'bg-transparent border-[1.5px] border-ink text-ink hover:bg-paper-dark focus-visible:ring-ink',
   danger:
-    'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-medium focus:ring-red-500 shadow-sm shadow-red-600/10',
+    'bg-card border-[1.5px] border-pole-red text-pole-red hover:bg-pole-red hover:text-card focus-visible:ring-pole-red',
   secondary:
-    'bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 text-zinc-100 font-medium focus:ring-zinc-600 border border-zinc-700/60',
+    'bg-paper-dark hover:bg-paper-deep text-ink border-[1.5px] border-ink focus-visible:ring-ink',
   ghost:
-    'text-zinc-300 hover:text-white hover:bg-zinc-800/60 active:bg-zinc-800 focus:ring-zinc-600',
+    'text-ink-soft hover:text-ink hover:bg-paper-dark focus-visible:ring-ink',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-xs gap-1.5 rounded-md',
-  md: 'px-4 py-2 text-sm gap-2 rounded-lg',
-  lg: 'px-5 py-2.5 text-base gap-2.5 rounded-xl',
+  sm: 'px-3 py-1.5 text-xs gap-1.5',
+  md: 'px-4 py-2 text-sm gap-2',
+  lg: 'px-5 py-3 text-base gap-2.5',
 };
 
 const iconSizes: Record<ButtonSize, number> = {
@@ -65,9 +65,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         disabled={isButtonDisabled}
         className={`
-          inline-flex items-center justify-center
+          inline-flex items-center justify-center rounded-sm
+          font-sign uppercase tracking-[0.08em] font-medium
           transition-all duration-150 ease-in-out
-          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-paper
           disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none
           select-none
           ${variantStyles[variant]}

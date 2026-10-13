@@ -4,7 +4,6 @@ import {
   Calendar,
   Clock,
   User,
-  Sparkles,
   CreditCard,
   Wallet,
   AlertTriangle,
@@ -290,24 +289,25 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-ink/60 animate-fade-in"
       role="dialog"
       aria-modal="true"
     >
       <div
         className={`
-          relative w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-t-3xl sm:rounded-2xl shadow-2xl
-          overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] animate-slide-up sm:animate-none
+          relative w-full max-w-lg bg-card border-[1.5px] border-ink rounded-sm shadow-stamp-lg
+          overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] animate-slide-up sm:animate-none pt-6
           ${className}
         `}
       >
-        {/* Mobile handle indicator */}
-        <div className="w-12 h-1.5 bg-zinc-700/60 rounded-full mx-auto mt-3 mb-1 sm:hidden" />
+        {/* Barber pole top stripe */}
+        <div className="pole-stripe absolute top-0 left-0 right-0" />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b-[1.5px] border-ink">
           <div className="flex items-center gap-2">
-            <Calendar size={18} className="text-amber-400" />
-            <h2 className="text-lg font-semibold text-zinc-100">
+            <Calendar size={18} className="text-pole-red" />
+            <h2 className="font-display text-xl text-ink">
               Confirmar Agendamento
             </h2>
           </div>
@@ -315,7 +315,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             type="button"
             onClick={handleClose}
             disabled={isSubmitting}
-            className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50"
+            className="text-ink-muted hover:text-ink p-1 rounded-sm hover:bg-paper-dark border border-transparent hover:border-ink transition-colors disabled:opacity-50"
             aria-label="Fechar"
           >
             <X size={20} />
@@ -327,39 +327,39 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           {/* 1. Success Feedback View */}
           {confirmedAppointment ? (
             <div className="text-center py-4 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-sm bg-moss-tint border-[1.5px] border-moss text-moss flex items-center justify-center mx-auto shadow-stamp-sm">
                 <CheckCircle2 size={36} />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-zinc-100">
+                <h3 className="font-display text-2xl text-ink">
                   Agendamento Confirmado!
                 </h3>
-                <p className="text-sm text-zinc-400 mt-1">
+                <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-1">
                   Seu horário foi reservado com sucesso no sistema.
                 </p>
               </div>
 
-              <div className="bg-zinc-950/60 border border-zinc-800 rounded-xl p-4 text-left space-y-2.5 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-zinc-400">Serviço:</span>
-                  <span className="font-semibold text-zinc-200">{service.name}</span>
+              <div className="card-paper p-4 text-left space-y-2.5 text-sm">
+                <div className="flex justify-between pb-1.5 border-b border-dashed border-ink-line">
+                  <span className="sign-label">Serviço:</span>
+                  <span className="font-semibold text-ink">{service.name}</span>
                 </div>
                 {professional && (
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Profissional:</span>
-                    <span className="font-semibold text-zinc-200">
+                  <div className="flex justify-between pb-1.5 border-b border-dashed border-ink-line">
+                    <span className="sign-label">Profissional:</span>
+                    <span className="font-semibold text-ink">
                       {professional.name}
                     </span>
                   </div>
                 )}
-                <div className="flex justify-between">
-                  <span className="text-zinc-400">Data e Horário:</span>
-                  <span className="font-semibold text-amber-400">
+                <div className="flex justify-between pb-1.5 border-b border-dashed border-ink-line">
+                  <span className="sign-label">Data e Horário:</span>
+                  <span className="font-semibold text-pole-red font-sign uppercase">
                     {formatFriendlyDateTime(selectedDate, slot.start_time)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center pt-2 border-t border-zinc-800/80">
-                  <span className="text-zinc-400">Forma de Pagamento:</span>
+                <div className="flex justify-between items-center pt-1">
+                  <span className="sign-label">Forma de Pagamento:</span>
                   <Badge
                     variant={
                       confirmedAppointment.payment_type === PaymentType.PACKAGE_CREDIT
@@ -383,34 +383,34 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           ) : (
             <>
               {/* 2. Service & Professional Summary Card */}
-              <div className="bg-zinc-950/70 border border-zinc-800/80 rounded-xl p-4 space-y-3">
+              <div className="card-paper p-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-bold text-base text-zinc-100">
+                    <h3 className="font-display text-lg text-ink">
                       {service.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs text-zinc-400 mt-1">
-                      <Clock size={13} className="text-amber-400" />
+                    <div className="flex items-center gap-2 font-sign uppercase tracking-wider text-xs text-ink-soft mt-0.5">
+                      <Clock size={12} className="text-pole-red" />
                       <span>{service.duration_minutes} min</span>
                       {professional && (
                         <>
                           <span>•</span>
-                          <User size={13} className="text-amber-400" />
+                          <User size={12} className="text-ink-muted" />
                           <span>{professional.name}</span>
                         </>
                       )}
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-base font-bold text-amber-400">
+                    <span className="font-display text-xl text-pole-red">
                       {formatCurrencyBRL(service.price)}
                     </span>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Data e Horário:</span>
-                  <span className="font-semibold text-zinc-200">
+                <div className="pt-2 border-t border-dashed border-ink-line flex items-center justify-between text-xs">
+                  <span className="sign-label">Data e Horário:</span>
+                  <span className="font-semibold text-ink font-sign uppercase">
                     {formatFriendlyDateTime(selectedDate, slot.start_time)}
                   </span>
                 </div>
@@ -418,12 +418,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
               {/* 3. 409 Conflict Banner */}
               {isConflict && (
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-left space-y-2">
-                  <div className="flex items-center gap-2 text-amber-400 font-semibold text-sm">
+                <div className="p-4 rounded-sm bg-mustard-tint border-[1.5px] border-mustard text-left space-y-2">
+                  <div className="flex items-center gap-2 text-mustard font-sign uppercase tracking-wider font-semibold text-sm">
                     <AlertTriangle size={18} />
                     <span>Horário Indisponível</span>
                   </div>
-                  <p className="text-xs text-amber-200/90 leading-relaxed">
+                  <p className="text-xs text-ink-soft leading-relaxed">
                     {errorMessage}
                   </p>
                   <div className="pt-1">
@@ -441,8 +441,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
               {/* 4. General Error Banner */}
               {!isConflict && errorMessage && (
-                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-2.5 text-xs text-rose-300">
-                  <AlertCircle size={16} className="text-rose-400 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-sm bg-pole-red-tint border-[1.5px] border-pole-red flex items-start gap-2.5 text-xs text-pole-red">
+                  <AlertCircle size={16} className="shrink-0 mt-0.5" />
                   <span>{errorMessage}</span>
                 </div>
               )}
@@ -450,7 +450,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               {/* 5. Payment Selection (Only when not in conflict) */}
               {!isConflict && (
                 <div className="space-y-3">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 block">
+                  <label className="sign-label block">
                     Forma de Pagamento
                   </label>
 
@@ -462,22 +462,22 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     role="button"
                     tabIndex={totalCredits > 0 ? 0 : -1}
                     className={`
-                      p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none
+                      p-3.5 rounded-sm border-[1.5px] transition-all cursor-pointer flex items-start gap-3 select-none
                       ${
                         paymentOption === 'CREDIT'
-                          ? 'bg-amber-500/10 border-amber-500/70 ring-1 ring-amber-500/30'
-                          : 'bg-zinc-950/40 border-zinc-800 hover:border-zinc-700'
+                          ? 'border-pole-red bg-card shadow-stamp-sm ring-1 ring-pole-red'
+                          : 'bg-paper-dark border-ink-line hover:border-ink'
                       }
                       ${totalCredits === 0 ? 'opacity-50 cursor-not-allowed' : ''}
                     `}
                   >
                     <div
                       className={`
-                        w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5
+                        w-9 h-9 rounded-sm border border-ink flex items-center justify-center shrink-0 mt-0.5
                         ${
                           paymentOption === 'CREDIT'
-                            ? 'bg-amber-500 text-zinc-950'
-                            : 'bg-zinc-800 text-zinc-400'
+                            ? 'bg-pole-red text-card'
+                            : 'bg-card text-ink'
                         }
                       `}
                     >
@@ -485,12 +485,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-sm text-zinc-200">
+                        <span className="font-sign uppercase tracking-wider font-semibold text-sm text-ink">
                           Usar Crédito do Pacote
                         </span>
                         {totalCredits > 0 ? (
                           <Badge variant="brand" size="sm">
-                            <Sparkles size={10} className="inline mr-1" />
                             {totalCredits} {totalCredits === 1 ? 'crédito' : 'créditos'}
                           </Badge>
                         ) : (
@@ -499,7 +498,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1 leading-normal">
+                      <p className="text-xs text-ink-soft mt-1 leading-normal">
                         {totalCredits > 0
                           ? '1 crédito será deduzido atomicamente da sua carteira.'
                           : 'Você não possui créditos ativos para este serviço.'}
@@ -513,21 +512,21 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     role="button"
                     tabIndex={0}
                     className={`
-                      p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none
+                      p-3.5 rounded-sm border-[1.5px] transition-all cursor-pointer flex items-start gap-3 select-none
                       ${
                         paymentOption === 'LOCAL'
-                          ? 'bg-amber-500/10 border-amber-500/70 ring-1 ring-amber-500/30'
-                          : 'bg-zinc-950/40 border-zinc-800 hover:border-zinc-700'
+                          ? 'border-pole-red bg-card shadow-stamp-sm ring-1 ring-pole-red'
+                          : 'bg-paper-dark border-ink-line hover:border-ink'
                       }
                     `}
                   >
                     <div
                       className={`
-                        w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5
+                        w-9 h-9 rounded-sm border border-ink flex items-center justify-center shrink-0 mt-0.5
                         ${
                           paymentOption === 'LOCAL'
-                            ? 'bg-amber-500 text-zinc-950'
-                            : 'bg-zinc-800 text-zinc-400'
+                            ? 'bg-pole-red text-card'
+                            : 'bg-card text-ink'
                         }
                       `}
                     >
@@ -535,14 +534,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-sm text-zinc-200">
+                        <span className="font-sign uppercase tracking-wider font-semibold text-sm text-ink">
                           Pagar no Local
                         </span>
-                        <span className="text-xs font-semibold text-zinc-400">
+                        <span className="font-display text-sm text-pole-red font-semibold">
                           {formatCurrencyBRL(service.price)}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-1 leading-normal">
+                      <p className="text-xs text-ink-soft mt-1 leading-normal">
                         Efetue o pagamento diretamente na barbearia após o corte.
                       </p>
                     </div>
@@ -555,7 +554,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
         {/* Footer Actions (Only if not already confirmed) */}
         {!confirmedAppointment && (
-          <div className="px-6 py-4 border-t border-zinc-800 flex items-center justify-end gap-3 bg-zinc-900/50">
+          <div className="px-6 py-4 border-t-[1.5px] border-ink flex items-center justify-end gap-3 bg-paper-dark">
             <Button
               variant="outline"
               onClick={handleClose}

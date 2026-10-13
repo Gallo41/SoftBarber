@@ -52,7 +52,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/95 backdrop-blur-lg border-t border-zinc-800 md:hidden safe-area-bottom shadow-2xl ${className}`}
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-card border-t-[1.5px] border-ink md:hidden safe-area-bottom shadow-lg ${className}`}
       aria-label="Navegação móvel do cliente"
     >
       <div className="grid grid-cols-4 h-16 max-w-md mx-auto px-2">
@@ -66,37 +66,38 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               type="button"
               onClick={() => onTabChange(item.id)}
               className={`
-                relative flex flex-col items-center justify-center py-1 transition-colors select-none
+                relative flex flex-col items-center justify-center py-1 transition-colors select-none font-sign uppercase tracking-wider
                 ${
                   isActive
-                    ? 'text-amber-400 font-semibold'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'text-pole-red font-semibold'
+                    : 'text-ink-muted hover:text-ink'
                 }
               `}
             >
               <div className="relative">
                 <Icon
                   size={20}
+                  strokeWidth={isActive ? 2 : 1.75}
                   className={`transition-transform duration-150 ${
-                    isActive ? 'scale-110 text-amber-400' : 'text-zinc-400'
+                    isActive ? 'scale-105 text-pole-red' : 'text-ink-soft'
                   }`}
                 />
 
                 {/* Badge indicator */}
                 {item.badgeCount !== undefined && item.badgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-amber-500 text-zinc-950 text-[10px] font-extrabold flex items-center justify-center leading-none">
+                  <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-sm bg-pole-red text-card text-[10px] font-sign font-bold flex items-center justify-center leading-none border border-ink">
                     {item.badgeCount}
                   </span>
                 )}
               </div>
 
-              <span className="text-[11px] mt-1 leading-none tracking-tight">
+              <span className="text-[10px] mt-1 leading-none">
                 {item.label}
               </span>
 
               {/* Active Tab Indicator Bar */}
               {isActive && (
-                <span className="absolute bottom-0 w-8 h-0.5 bg-amber-400 rounded-full" />
+                <span className="absolute bottom-0 w-8 h-0.5 bg-pole-red" />
               )}
             </button>
           );

@@ -129,33 +129,36 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="customer-login-title"
-      className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 ${className}`}
+      className={`fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4 animate-fade-in ${className}`}
     >
-      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-zinc-100 relative animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-card border-[1.5px] border-ink rounded-sm p-6 sm:p-8 max-w-md w-full shadow-stamp-lg text-ink relative pt-8 overflow-hidden animate-slide-up">
+        {/* Barber pole top stripe */}
+        <div className="pole-stripe absolute top-0 left-0 right-0" />
+
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
           aria-label="Fechar"
-          className="absolute top-4 right-4 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+          className="absolute top-3.5 right-3.5 p-1.5 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-dark border border-transparent hover:border-ink transition-colors"
         >
           <X size={20} />
         </button>
 
         {/* Header Icon & Title */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3 shadow-sm shadow-amber-500/10">
-            <UserCheck size={28} />
+          <div className="w-12 h-12 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink mb-3 shadow-stamp-sm">
+            <UserCheck size={24} strokeWidth={2} />
           </div>
 
           <h2
             id="customer-login-title"
-            className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100"
+            className="font-display text-2xl text-ink tracking-tight"
           >
             Identifique-se
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xs">
-            Digite seu WhatsApp para acessar seus créditos de pacotes e horários agendados
+          <p className="font-sign uppercase tracking-wider text-[11px] text-ink-soft mt-1 max-w-xs">
+            Digite seu WhatsApp para acessar seus créditos e agendamentos
           </p>
         </div>
 
@@ -164,7 +167,7 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <div
             role="alert"
             data-testid="customer-login-error"
-            className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs sm:text-sm text-center font-medium animate-in fade-in duration-150"
+            className="mb-4 p-3 rounded-sm bg-pole-red-tint border-[1.5px] border-pole-red text-pole-red text-xs text-center font-medium"
           >
             {error}
           </div>
@@ -176,13 +179,13 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <div>
             <label
               htmlFor="customer-phone"
-              className="block text-xs font-semibold text-zinc-300 mb-1.5"
+              className="block font-sign uppercase tracking-wider text-xs text-ink mb-1"
             >
-              Telefone / WhatsApp <span className="text-amber-400">*</span>
+              Telefone / WhatsApp <span className="text-pole-red">*</span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
-                <Phone size={17} />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
+                <Phone size={16} />
               </div>
               <input
                 id="customer-phone"
@@ -191,7 +194,7 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
                 onChange={handlePhoneChange}
                 placeholder="(11) 98765-4321"
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 disabled:opacity-50 transition-colors"
+                className="input-paper pl-9 text-sm"
               />
             </div>
           </div>
@@ -200,13 +203,13 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <div>
             <label
               htmlFor="customer-name"
-              className="block text-xs font-semibold text-zinc-300 mb-1.5"
+              className="block font-sign uppercase tracking-wider text-xs text-ink mb-1"
             >
               Nome Completo
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
-                <User size={17} />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
+                <User size={16} />
               </div>
               <input
                 id="customer-name"
@@ -215,10 +218,10 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome (ex: João Silva)"
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 disabled:opacity-50 transition-colors"
+                className="input-paper pl-9 text-sm"
               />
             </div>
-            <p className="text-[11px] text-zinc-500 mt-1">
+            <p className="font-sign uppercase tracking-wider text-[10px] text-ink-muted mt-1">
               Opcional para quem já tem cadastro, obrigatório no primeiro acesso.
             </p>
           </div>
@@ -227,13 +230,13 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <div>
             <label
               htmlFor="customer-email"
-              className="block text-xs font-semibold text-zinc-300 mb-1.5"
+              className="block font-sign uppercase tracking-wider text-xs text-ink mb-1"
             >
               E-mail (opcional)
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
-                <Mail size={17} />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
+                <Mail size={16} />
               </div>
               <input
                 id="customer-email"
@@ -242,7 +245,7 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com (opcional)"
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 disabled:opacity-50 transition-colors"
+                className="input-paper pl-9 text-sm"
               />
             </div>
           </div>
@@ -251,11 +254,11 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full mt-2 py-3.5 px-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-zinc-950 font-bold rounded-xl text-sm shadow-md shadow-amber-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-[0.99] select-none"
+            className="w-full mt-2 py-3 px-4 bg-pole-red hover:bg-pole-red-dark text-card font-sign uppercase tracking-wider font-semibold rounded-sm text-sm border-[1.5px] border-ink shadow-stamp-sm active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all flex items-center justify-center gap-2 disabled:opacity-50 select-none"
           >
             {isLoading ? (
               <>
-                <Loader2 size={18} className="animate-spin" />
+                <Loader2 size={16} className="animate-spin" />
                 <span>Identificando...</span>
               </>
             ) : (

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, X, Sparkles, Smartphone } from 'lucide-react';
+import { Download, X, Smartphone } from 'lucide-react';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 import { IOSInstallModal } from './IOSInstallModal';
 import { Button } from './Button';
@@ -43,24 +43,21 @@ export const InstallAppBanner: React.FC<InstallAppBannerProps> = ({
     <>
       <aside
         aria-label="Instalar aplicativo"
-        className={`bg-gradient-to-r from-amber-500/15 via-zinc-900 to-zinc-900 border border-amber-500/30 rounded-2xl p-4 shadow-xl backdrop-blur-md relative overflow-hidden ${className}`}
+        className={`bg-card border-[1.5px] border-ink rounded-sm p-4 shadow-stamp-sm relative overflow-hidden pt-5 ${className}`}
       >
-        {/* Subtle decorative glow */}
-        <div className="absolute -top-12 -left-12 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+        {/* Barber pole top stripe */}
+        <div className="pole-stripe absolute top-0 left-0 right-0" />
 
         <div className="flex items-center justify-between gap-3 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-sm shadow-amber-500/20">
-              <Download size={22} className="animate-bounce" />
+            <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-pole-red shrink-0 shadow-stamp-sm">
+              <Download size={20} strokeWidth={2} />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <h3 className="text-sm font-bold text-zinc-100 tracking-tight">
-                  Instalar Aplicativo SoftBarber
-                </h3>
-                <Sparkles size={13} className="text-amber-400 shrink-0" />
-              </div>
-              <p className="text-xs text-zinc-400 mt-0.5 line-clamp-1">
+              <h3 className="font-display text-base text-ink tracking-tight">
+                Instalar Aplicativo SoftBarber
+              </h3>
+              <p className="text-xs text-ink-soft mt-0.5 line-clamp-1">
                 Acesse seus horários e créditos direto da tela de início sem digitar URL.
               </p>
             </div>
@@ -71,7 +68,7 @@ export const InstallAppBanner: React.FC<InstallAppBannerProps> = ({
               variant="primary"
               size="sm"
               onClick={handleInstallClick}
-              className="px-3.5 py-1.5 text-xs font-bold shadow-md shadow-amber-500/20 flex items-center gap-1.5"
+              className="px-3.5 py-1.5 text-xs flex items-center gap-1.5"
             >
               <Smartphone size={14} />
               <span>Instalar</span>
@@ -80,7 +77,7 @@ export const InstallAppBanner: React.FC<InstallAppBannerProps> = ({
             <button
               type="button"
               onClick={dismiss}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+              className="p-1 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-dark transition-colors border border-transparent hover:border-ink"
               aria-label="Dispensar aviso de instalação"
               title="Dispensar"
             >

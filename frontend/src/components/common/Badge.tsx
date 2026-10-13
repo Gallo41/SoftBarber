@@ -32,34 +32,34 @@ const statusConfigMap: Record<
 
 const variantClasses: Record<BadgeVariant, { container: string; dot: string }> = {
   success: {
-    container: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25',
-    dot: 'bg-emerald-400',
+    container: 'bg-moss-tint text-moss border-moss',
+    dot: 'bg-moss',
   },
   warning: {
-    container: 'bg-amber-500/10 text-amber-400 border-amber-500/25',
-    dot: 'bg-amber-400',
+    container: 'bg-mustard-tint text-mustard border-mustard',
+    dot: 'bg-mustard',
   },
   danger: {
-    container: 'bg-rose-500/10 text-rose-400 border-rose-500/25',
-    dot: 'bg-rose-400',
+    container: 'bg-pole-red-tint text-pole-red border-pole-red',
+    dot: 'bg-pole-red',
   },
   info: {
-    container: 'bg-sky-500/10 text-sky-400 border-sky-500/25',
-    dot: 'bg-sky-400',
+    container: 'bg-pole-blue-tint text-pole-blue border-pole-blue',
+    dot: 'bg-pole-blue',
   },
   brand: {
-    container: 'bg-amber-500/15 text-amber-300 border-amber-400/30',
-    dot: 'bg-amber-400',
+    container: 'bg-ink text-card border-ink',
+    dot: 'bg-pole-red',
   },
   neutral: {
-    container: 'bg-zinc-800 text-zinc-400 border-zinc-700',
-    dot: 'bg-zinc-400',
+    container: 'bg-paper-dark text-ink-soft border-ink-muted',
+    dot: 'bg-ink-muted',
   },
 };
 
 const sizeClasses: Record<BadgeSize, string> = {
-  sm: 'px-2 py-0.5 text-xs',
-  md: 'px-2.5 py-1 text-xs sm:text-sm',
+  sm: 'px-2 py-0.5 text-[0.68rem]',
+  md: 'px-2.5 py-1 text-xs',
 };
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -81,7 +81,8 @@ export const Badge: React.FC<BadgeProps> = ({
   return (
     <span
       className={`
-        inline-flex items-center gap-1.5 font-medium rounded-full border
+        inline-flex items-center gap-1.5 rounded-sm border
+        font-sign uppercase tracking-[0.1em] font-medium
         transition-colors select-none
         ${containerStyle}
         ${sizeClasses[size]}

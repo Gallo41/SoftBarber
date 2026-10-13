@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Package, Clock, CheckCircle2, Sparkles } from 'lucide-react';
+import { Package, Clock, CheckCircle2 } from 'lucide-react';
 import { PackageResponse } from '../../types/api';
 import { Button } from '../common/Button';
 
@@ -51,26 +51,24 @@ export const PackageCard: React.FC<PackageCardProps> = ({
   return (
     <div
       className={`
-        bg-zinc-900/90 border border-zinc-800 rounded-xl p-6
-        flex flex-col justify-between
-        hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/5
-        transition-all duration-200
+        card-paper p-6 shadow-stamp-sm hover:shadow-stamp
+        flex flex-col justify-between transition-all duration-150
         ${className}
       `}
     >
       {/* Top Header & Price */}
       <div>
         <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-              <Package size={20} />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink shrink-0 shadow-stamp-sm">
+              <Package size={20} strokeWidth={1.75} />
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-zinc-100 leading-snug">
+              <h3 className="font-display text-lg sm:text-xl text-ink leading-snug">
                 {pkg.name}
               </h3>
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
-                <Clock size={12} className="text-amber-400/80" />
+              <div className="flex items-center gap-1.5 font-sign uppercase tracking-wider text-xs text-ink-muted mt-0.5">
+                <Clock size={12} className="text-pole-red" />
                 <span>Validade: {pkg.validity_days} dias</span>
               </div>
             </div>
@@ -79,25 +77,24 @@ export const PackageCard: React.FC<PackageCardProps> = ({
 
         {/* Description */}
         {pkg.description && (
-          <p className="text-sm text-zinc-400 mb-4 line-clamp-2">
+          <p className="text-xs sm:text-sm text-ink-soft mb-4 line-clamp-2">
             {pkg.description}
           </p>
         )}
 
-        {/* Price display */}
-        <div className="mb-6 p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/80 flex items-baseline justify-between">
-          <span className="text-xs uppercase tracking-wider font-medium text-zinc-400">
+        {/* Price display - Voucher ticket cutout style */}
+        <div className="mb-5 p-3 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-baseline justify-between shadow-sm">
+          <span className="sign-label">
             Preço do Pacote
           </span>
-          <span className="text-2xl font-bold text-amber-400">
+          <span className="font-display text-2xl text-pole-red">
             {formatCurrencyBRL(pkg.price)}
           </span>
         </div>
 
         {/* Included Services List */}
         <div className="space-y-2 mb-6">
-          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-            <Sparkles size={13} className="text-amber-400" />
+          <div className="sign-label flex items-center gap-1.5">
             <span>Sessões Inclusas</span>
           </div>
 
@@ -109,21 +106,21 @@ export const PackageCard: React.FC<PackageCardProps> = ({
                 return (
                   <li
                     key={item.id || item.service_id}
-                    className="flex items-center gap-2 text-sm text-zinc-300"
+                    className="flex items-center gap-2 text-sm text-ink pb-1 border-b border-dashed border-ink-line"
                   >
                     <CheckCircle2
                       size={15}
-                      className="text-amber-400 shrink-0"
+                      className="text-moss shrink-0"
                     />
-                    <span className="font-medium text-amber-300/90">
+                    <span className="font-sign uppercase font-bold text-pole-red">
                       {item.quantity}x
                     </span>
-                    <span className="text-zinc-200">{serviceName}</span>
+                    <span className="text-ink font-medium">{serviceName}</span>
                   </li>
                 );
               })
             ) : (
-              <li className="text-xs text-zinc-500 italic">
+              <li className="text-xs text-ink-muted italic">
                 Nenhum serviço discriminado
               </li>
             )}
@@ -132,7 +129,7 @@ export const PackageCard: React.FC<PackageCardProps> = ({
       </div>
 
       {/* Action Footer */}
-      <div className="pt-4 border-t border-zinc-800/80">
+      <div className="pt-4 border-t-[1.5px] border-ink">
         <Button
           variant="primary"
           fullWidth
@@ -147,3 +144,5 @@ export const PackageCard: React.FC<PackageCardProps> = ({
     </div>
   );
 };
+
+export default PackageCard;

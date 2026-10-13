@@ -91,18 +91,18 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Tab Switcher */}
-      <div className="flex items-center justify-between border-b border-zinc-800 pb-3 gap-2">
+      <div className="flex items-center justify-between border-b-[1.5px] border-ink pb-3 gap-2">
         <div className="flex items-center gap-2">
           {/* Upcoming Tab */}
           <button
             type="button"
             onClick={() => setActiveTab('upcoming')}
             className={`
-              flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors
+              flex items-center gap-2 px-3.5 py-2 rounded-sm font-sign uppercase tracking-wider text-xs sm:text-sm font-medium transition-all select-none
               ${
                 activeTab === 'upcoming'
-                  ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 border border-transparent'
+                  ? 'bg-ink text-card shadow-stamp-sm'
+                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
               }
             `}
           >
@@ -110,11 +110,11 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
             <span>Próximos</span>
             <span
               className={`
-                px-1.5 py-0.5 rounded-full text-[10px] font-semibold
+                px-1.5 py-0.5 rounded-sm text-[10px] font-bold font-sign
                 ${
                   activeTab === 'upcoming'
-                    ? 'bg-amber-500 text-zinc-950'
-                    : 'bg-zinc-800 text-zinc-400'
+                    ? 'bg-card text-ink'
+                    : 'bg-card text-ink-muted'
                 }
               `}
             >
@@ -127,11 +127,11 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
             type="button"
             onClick={() => setActiveTab('past')}
             className={`
-              flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors
+              flex items-center gap-2 px-3.5 py-2 rounded-sm font-sign uppercase tracking-wider text-xs sm:text-sm font-medium transition-all select-none
               ${
                 activeTab === 'past'
-                  ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 border border-transparent'
+                  ? 'bg-ink text-card shadow-stamp-sm'
+                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
               }
             `}
           >
@@ -139,11 +139,11 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
             <span>Histórico</span>
             <span
               className={`
-                px-1.5 py-0.5 rounded-full text-[10px] font-semibold
+                px-1.5 py-0.5 rounded-sm text-[10px] font-bold font-sign
                 ${
                   activeTab === 'past'
-                    ? 'bg-amber-500 text-zinc-950'
-                    : 'bg-zinc-800 text-zinc-400'
+                    ? 'bg-card text-ink'
+                    : 'bg-card text-ink-muted'
                 }
               `}
             >
@@ -168,9 +168,9 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
 
       {/* Loading State */}
       {isLoading ? (
-        <div className="py-16 flex flex-col items-center justify-center gap-3 text-zinc-400">
-          <Loader2 size={28} className="animate-spin text-amber-400" />
-          <p className="text-sm">Carregando seus agendamentos...</p>
+        <div className="py-16 flex flex-col items-center justify-center gap-3 text-ink-soft">
+          <Loader2 size={28} className="animate-spin text-pole-red" />
+          <p className="font-sign uppercase tracking-wider text-sm">Carregando seus agendamentos...</p>
         </div>
       ) : activeTab === 'upcoming' ? (
         /* Upcoming Tab Content */
@@ -189,15 +189,15 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
           </div>
         ) : (
           /* Empty State for Upcoming */
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-8 text-center flex flex-col items-center justify-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-amber-400/80">
-              <CalendarClock size={28} />
+          <div className="card-paper p-8 text-center flex flex-col items-center justify-center space-y-4 shadow-stamp-sm">
+            <div className="w-14 h-14 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink shadow-stamp-sm">
+              <CalendarClock size={26} strokeWidth={1.75} />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-zinc-100">
+              <h3 className="font-display text-lg text-ink">
                 Você não possui agendamentos futuros
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-sm">
+              <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-1 max-w-sm">
                 Reserve um horário com nossos profissionais para garantir seu
                 atendimento.
               </p>
@@ -231,15 +231,15 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
           </div>
         ) : (
           /* Empty State for Past */
-          <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-8 text-center flex flex-col items-center justify-center space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-500">
-              <CalendarX size={28} />
+          <div className="card-paper p-8 text-center flex flex-col items-center justify-center space-y-4 shadow-stamp-sm">
+            <div className="w-14 h-14 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink-muted">
+              <CalendarX size={26} strokeWidth={1.75} />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-zinc-100">
+              <h3 className="font-display text-lg text-ink">
                 Nenhum histórico disponível
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-sm">
+              <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-1 max-w-sm">
                 Seus atendimentos anteriores ou cancelados serão listados aqui.
               </p>
             </div>
@@ -260,3 +260,5 @@ export const AppointmentList: React.FC<AppointmentListProps> = ({
     </div>
   );
 };
+
+export default AppointmentList;

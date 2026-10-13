@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   PackageOpen,
   ArrowRight,
-  Sparkles,
 } from 'lucide-react';
 import { CustomerPackageResponse, PackageStatus } from '../../types/api';
 import { Badge } from '../common/Badge';
@@ -69,18 +68,17 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
     return (
       <div
         className={`
-          bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-8
-          text-center flex flex-col items-center justify-center
+          card-paper p-8 text-center flex flex-col items-center justify-center shadow-stamp-sm
           ${className}
         `}
       >
-        <div className="w-16 h-16 rounded-2xl bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center text-zinc-400 mb-4">
-          <PackageOpen size={32} className="text-amber-400/70" />
+        <div className="w-14 h-14 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink mb-4 shadow-stamp-sm">
+          <PackageOpen size={28} strokeWidth={1.75} />
         </div>
-        <h3 className="text-lg font-semibold text-zinc-100 mb-2">
+        <h3 className="font-display text-lg text-ink mb-2">
           Sua Carteira de Créditos está vazia
         </h3>
-        <p className="text-sm text-zinc-400 max-w-md mb-6">
+        <p className="font-sign uppercase tracking-wider text-xs text-ink-soft max-w-md mb-6">
           Você ainda não possui créditos ou pacotes ativos. Adquira um combo
           promocional para economizar e agendar seus cortes com praticidade.
         </p>
@@ -108,23 +106,23 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
         return (
           <div
             key={pkg.id}
-            className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-colors"
+            className="card-paper p-5 shadow-stamp-sm hover:shadow-stamp transition-all duration-150"
           >
             {/* Header: Package Name, ID & Status Badge */}
             <div className="flex items-start justify-between gap-3 mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
-                  <Wallet size={20} />
+                <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink shrink-0 shadow-stamp-sm">
+                  <Wallet size={18} strokeWidth={1.75} />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-zinc-100 leading-tight">
+                  <h4 className="font-display text-lg text-ink leading-tight">
                     {packageName}
                   </h4>
-                  <div className="flex items-center gap-2 text-xs text-zinc-400 mt-1">
+                  <div className="flex items-center gap-2 font-sign uppercase tracking-wider text-xs text-ink-muted mt-0.5">
                     <span>Cód. #{pkg.id}</span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
-                      <Calendar size={12} className="text-zinc-500" />
+                      <Calendar size={11} className="text-pole-red" />
                       {expiry.text}
                     </span>
                   </div>
@@ -138,8 +136,8 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
 
             {/* Expiring Soon Warning Banner */}
             {isActive && expiry.isExpiringSoon && (
-              <div className="mb-4 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center gap-2 text-xs text-amber-300">
-                <AlertTriangle size={14} className="shrink-0 text-amber-400" />
+              <div className="mb-4 px-3 py-2 rounded-sm bg-mustard-tint border-[1.5px] border-mustard flex items-center gap-2 font-sign uppercase tracking-wider text-xs text-mustard">
+                <AlertTriangle size={14} className="shrink-0 text-mustard" />
                 <span>
                   Atenção: seus créditos expiram em {expiry.diffDays}{' '}
                   {expiry.diffDays === 1 ? 'dia' : 'dias'}. Aproveite para agendar!
@@ -147,8 +145,8 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
               </div>
             )}
 
-            {/* Service Balances List & Progress Bars */}
-            <div className="space-y-4 pt-2">
+            {/* Service Balances List & Punch-Card Bars */}
+            <div className="space-y-3 pt-2">
               {pkg.balances && pkg.balances.length > 0 ? (
                 pkg.balances.map((balance) => {
                   const serviceName =
@@ -170,34 +168,31 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
                   return (
                     <div
                       key={balance.id || balance.service_id}
-                      className="p-3.5 rounded-lg bg-zinc-950/50 border border-zinc-800/70"
+                      className="p-3.5 rounded-sm bg-paper-dark border-[1.5px] border-ink shadow-sm"
                     >
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-2">
-                          <Sparkles size={14} className="text-amber-400 shrink-0" />
-                          <span className="text-sm font-medium text-zinc-200">
-                            {serviceName}
-                          </span>
-                        </div>
-                        <span className="text-xs font-semibold text-amber-400">
+                      <div className="flex items-center justify-between gap-2 mb-2 pb-1 border-b border-dashed border-ink-line">
+                        <span className="font-semibold text-sm text-ink">
+                          {serviceName}
+                        </span>
+                        <span className="font-sign uppercase tracking-wider text-xs font-bold text-pole-red">
                           {balance.remaining_quantity} de {balance.total_quantity}{' '}
                           restantes
                         </span>
                       </div>
 
-                      {/* Progress Bar */}
-                      <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden mb-2">
+                      {/* Progress Bar (Punch-card strip style) */}
+                      <div className="w-full bg-paper-deep border border-ink h-2.5 overflow-hidden mb-2">
                         <div
-                          className={`h-full transition-all duration-300 rounded-full ${
+                          className={`h-full transition-all duration-300 ${
                             balance.remaining_quantity > 0
-                              ? 'bg-amber-500'
-                              : 'bg-zinc-600'
+                              ? 'bg-pole-red'
+                              : 'bg-ink-muted'
                           }`}
                           style={{ width: `${Math.min(100, percentRemaining)}%` }}
                         />
                       </div>
 
-                      <div className="flex items-center justify-between text-xs text-zinc-400">
+                      <div className="flex items-center justify-between font-sign uppercase tracking-wider text-xs text-ink-muted">
                         <span>{percentRemaining}% disponível</span>
 
                         {canUse && (
@@ -206,7 +201,7 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
                             onClick={() =>
                               onUseCreditClick?.(pkg.id, balance.service_id)
                             }
-                            className="text-amber-400 hover:text-amber-300 font-medium inline-flex items-center gap-1 transition-colors"
+                            className="text-pole-red hover:text-pole-red-dark font-sign uppercase tracking-wider font-semibold inline-flex items-center gap-1 transition-colors"
                           >
                             <span>Agendar com crédito</span>
                             <ArrowRight size={12} />
@@ -217,7 +212,7 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
                   );
                 })
               ) : (
-                <p className="text-xs text-zinc-500 italic">
+                <p className="text-xs text-ink-muted italic">
                   Nenhum saldo computado para este pacote.
                 </p>
               )}
@@ -228,3 +223,5 @@ export const WalletBalance: React.FC<WalletBalanceProps> = ({
     </div>
   );
 };
+
+export default WalletBalance;

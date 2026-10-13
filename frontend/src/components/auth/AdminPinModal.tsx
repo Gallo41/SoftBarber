@@ -116,32 +116,35 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-pin-title"
-      className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 ${className}`}
+      className={`fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4 animate-fade-in ${className}`}
     >
-      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-zinc-100 flex flex-col items-center relative animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-card border-[1.5px] border-ink rounded-sm p-6 sm:p-8 max-w-sm w-full shadow-stamp-lg text-ink flex flex-col items-center relative pt-8 overflow-hidden animate-slide-up">
+        {/* Barber pole top stripe */}
+        <div className="pole-stripe absolute top-0 left-0 right-0" />
+
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
           aria-label="Fechar"
-          className="absolute top-4 right-4 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+          className="absolute top-3.5 right-3.5 p-1.5 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-dark border border-transparent hover:border-ink transition-colors"
         >
           <X size={20} />
         </button>
 
         {/* Lock Icon */}
-        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4 shadow-sm shadow-amber-500/10">
-          <Lock size={26} />
+        <div className="w-12 h-12 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink mb-3 shadow-stamp-sm">
+          <Lock size={22} strokeWidth={2} />
         </div>
 
         {/* Title & Description */}
         <h2
           id="admin-pin-title"
-          className="text-xl font-bold tracking-tight text-zinc-100 text-center"
+          className="font-display text-2xl text-ink text-center tracking-tight"
         >
           Acesso Administrativo
         </h2>
-        <p className="text-xs text-zinc-400 text-center mt-1 mb-4">
+        <p className="font-sign uppercase tracking-wider text-[11px] text-ink-soft text-center mt-1 mb-4">
           Digite o PIN de 4 dígitos para gerenciar o painel
         </p>
 
@@ -156,11 +159,11 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
               <div
                 key={index}
                 data-testid={`pin-dot-${index}`}
-                className={`w-4 h-4 rounded-full transition-all duration-150 ${
+                className={`w-4 h-4 rounded-full border-[1.5px] transition-all duration-150 ${
                   isFilled
-                    ? 'bg-amber-500 ring-4 ring-amber-500/20 scale-110'
-                    : 'border-2 border-zinc-700 bg-zinc-950'
-                } ${error ? 'border-rose-500' : ''}`}
+                    ? 'bg-pole-red border-ink scale-110 shadow-stamp-sm'
+                    : 'bg-transparent border-ink'
+                } ${error ? 'border-pole-red' : ''}`}
               />
             );
           })}
@@ -169,14 +172,14 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
         {/* Error message / Loading feedback */}
         <div className="min-h-[28px] flex items-center justify-center my-1 w-full">
           {isLoading ? (
-            <div className="flex items-center gap-2 text-xs font-medium text-amber-400">
+            <div className="flex items-center gap-2 text-xs font-sign uppercase tracking-wider text-pole-red">
               <Loader2 size={14} className="animate-spin" />
               <span>Verificando PIN...</span>
             </div>
           ) : error ? (
             <p
               role="alert"
-              className="text-xs font-semibold text-rose-400 text-center"
+              className="text-xs font-semibold text-pole-red text-center"
               data-testid="pin-error"
             >
               {error}
@@ -185,14 +188,14 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
         </div>
 
         {/* Touch Numpad */}
-        <div className="grid grid-cols-3 gap-3 w-full max-w-[280px] mt-2 select-none">
+        <div className="grid grid-cols-3 gap-2.5 w-full max-w-[280px] mt-2 select-none">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
             <button
               key={digit}
               type="button"
               disabled={isLoading}
               onClick={() => handleDigit(digit.toString())}
-              className="h-14 sm:h-16 rounded-2xl bg-zinc-800/80 hover:bg-zinc-750 active:bg-amber-500 active:text-zinc-950 disabled:opacity-50 text-xl sm:text-2xl font-bold text-zinc-100 transition-all border border-zinc-700/50 shadow-sm flex items-center justify-center active:scale-95"
+              className="h-13 sm:h-14 rounded-sm bg-card hover:bg-paper-dark active:bg-pole-red active:text-card disabled:opacity-50 font-display text-2xl text-ink transition-all border-[1.5px] border-ink shadow-stamp-sm flex items-center justify-center active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
             >
               {digit}
             </button>
@@ -203,9 +206,9 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
             type="button"
             disabled={isLoading || pin.length === 0}
             onClick={handleClear}
-            className="h-14 sm:h-16 rounded-2xl bg-zinc-800/40 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 active:text-rose-400 disabled:opacity-30 text-xs sm:text-sm font-semibold transition-all border border-zinc-800 shadow-sm flex flex-col items-center justify-center gap-0.5 active:scale-95"
+            className="h-13 sm:h-14 rounded-sm bg-paper-dark hover:bg-paper-deep text-ink-soft hover:text-ink active:text-pole-red disabled:opacity-30 font-sign uppercase tracking-wider text-xs transition-all border-[1.5px] border-ink shadow-stamp-sm flex flex-col items-center justify-center gap-0.5 active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <RotateCcw size={16} />
+            <RotateCcw size={15} />
             <span>Limpar</span>
           </button>
 
@@ -214,7 +217,7 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
             type="button"
             disabled={isLoading}
             onClick={() => handleDigit('0')}
-            className="h-14 sm:h-16 rounded-2xl bg-zinc-800/80 hover:bg-zinc-750 active:bg-amber-500 active:text-zinc-950 disabled:opacity-50 text-xl sm:text-2xl font-bold text-zinc-100 transition-all border border-zinc-700/50 shadow-sm flex items-center justify-center active:scale-95"
+            className="h-13 sm:h-14 rounded-sm bg-card hover:bg-paper-dark active:bg-pole-red active:text-card disabled:opacity-50 font-display text-2xl text-ink transition-all border-[1.5px] border-ink shadow-stamp-sm flex items-center justify-center active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
           >
             0
           </button>
@@ -224,9 +227,9 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
             type="button"
             disabled={isLoading || pin.length === 0}
             onClick={handleBackspace}
-            className="h-14 sm:h-16 rounded-2xl bg-zinc-800/40 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 active:text-amber-400 disabled:opacity-30 text-xs sm:text-sm font-semibold transition-all border border-zinc-800 shadow-sm flex flex-col items-center justify-center gap-0.5 active:scale-95"
+            className="h-13 sm:h-14 rounded-sm bg-paper-dark hover:bg-paper-deep text-ink-soft hover:text-ink active:text-pole-red disabled:opacity-30 font-sign uppercase tracking-wider text-xs transition-all border-[1.5px] border-ink shadow-stamp-sm flex flex-col items-center justify-center gap-0.5 active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
           >
-            <Delete size={18} />
+            <Delete size={16} />
             <span>Apagar</span>
           </button>
         </div>

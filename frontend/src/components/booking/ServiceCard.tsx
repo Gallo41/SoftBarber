@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Scissors, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Clock, Scissors, CheckCircle2 } from 'lucide-react';
 import { Service } from '../../types/api';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
@@ -51,12 +51,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         }
       }}
       className={`
-        relative rounded-xl p-5 transition-all duration-200 cursor-pointer select-none
-        border flex flex-col justify-between
+        card-paper p-5 transition-all duration-150 cursor-pointer select-none
+        flex flex-col justify-between
         ${
           isSelected
-            ? 'bg-zinc-900/95 border-amber-500 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/40'
-            : 'bg-zinc-900/80 border-zinc-800 hover:border-amber-500/50 hover:bg-zinc-900/95 hover:shadow-md'
+            ? 'border-pole-red shadow-stamp ring-1 ring-pole-red'
+            : 'shadow-stamp-sm hover:shadow-stamp hover:border-ink'
         }
         ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
         ${className}
@@ -68,29 +68,29 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           <div className="flex items-center gap-3">
             <div
               className={`
-                w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors
+                w-10 h-10 rounded-sm flex items-center justify-center shrink-0 border-[1.5px] border-ink transition-colors shadow-stamp-sm
                 ${
                   isSelected
-                    ? 'bg-amber-500 text-zinc-950'
-                    : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
+                    ? 'bg-pole-red text-card border-ink'
+                    : 'bg-paper-dark text-ink'
                 }
               `}
             >
-              <Scissors size={20} />
+              <Scissors size={18} strokeWidth={1.75} />
             </div>
             <div>
-              <h3 className="font-semibold text-base sm:text-lg text-zinc-100 leading-snug">
+              <h3 className="font-display text-base sm:text-lg text-ink leading-snug">
                 {service.name}
               </h3>
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
-                <Clock size={13} className="text-amber-400/90" />
+              <div className="flex items-center gap-1.5 font-sign uppercase tracking-wider text-xs text-ink-muted mt-0.5">
+                <Clock size={12} className="text-pole-red" />
                 <span>{service.duration_minutes} min de duração</span>
               </div>
             </div>
           </div>
 
           {isSelected && (
-            <div className="text-amber-400">
+            <div className="text-pole-red">
               <CheckCircle2 size={20} />
             </div>
           )}
@@ -98,19 +98,19 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
         {/* Description */}
         {service.description && (
-          <p className="text-sm text-zinc-400 mb-4 line-clamp-2">
+          <p className="text-xs sm:text-sm text-ink-soft mb-4 line-clamp-2">
             {service.description}
           </p>
         )}
       </div>
 
       {/* Bottom Section: Price / Credits & Action Button */}
-      <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between gap-3 mt-2">
+      <div className="pt-3 border-t-[1.5px] border-ink flex items-center justify-between gap-3 mt-2">
         <div className="flex flex-col">
-          <span className="text-xs uppercase tracking-wider font-medium text-zinc-500">
+          <span className="sign-label">
             Valor
           </span>
-          <span className="text-lg sm:text-xl font-bold text-amber-400">
+          <span className="font-display text-xl sm:text-2xl text-pole-red">
             {formatCurrencyBRL(service.price)}
           </span>
         </div>
@@ -118,7 +118,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         <div className="flex items-center gap-2">
           {creditsAvailable > 0 && (
             <Badge variant="brand" size="sm" title="Créditos disponíveis no seu pacote">
-              <Sparkles size={11} className="text-amber-400 inline mr-1" />
               {creditsAvailable} {creditsAvailable === 1 ? 'crédito' : 'créditos'}
             </Badge>
           )}
