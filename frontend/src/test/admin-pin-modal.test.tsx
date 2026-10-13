@@ -72,21 +72,21 @@ describe('AdminPinModal Component', () => {
 
     // Should have 3 filled dots
     const dots = screen.getAllByTestId(/pin-dot-/);
-    expect(dots[0].className).toContain('bg-pole-red');
-    expect(dots[1].className).toContain('bg-pole-red');
-    expect(dots[2].className).toContain('bg-pole-red');
-    expect(dots[3].className).not.toContain('bg-pole-red');
+    expect(dots[0].className).toContain('bg-slate-900');
+    expect(dots[1].className).toContain('bg-slate-900');
+    expect(dots[2].className).toContain('bg-slate-900');
+    expect(dots[3].className).not.toContain('bg-slate-900');
 
     // Click apagar (backspace) -> 2 dots filled
     fireEvent.click(apagarBtn);
-    expect(dots[0].className).toContain('bg-pole-red');
-    expect(dots[1].className).toContain('bg-pole-red');
-    expect(dots[2].className).not.toContain('bg-pole-red');
+    expect(dots[0].className).toContain('bg-slate-900');
+    expect(dots[1].className).toContain('bg-slate-900');
+    expect(dots[2].className).not.toContain('bg-slate-900');
 
     // Click limpar -> 0 dots filled
     fireEvent.click(limparBtn);
-    expect(dots[0].className).not.toContain('bg-pole-red');
-    expect(dots[1].className).not.toContain('bg-pole-red');
+    expect(dots[0].className).not.toContain('bg-slate-900');
+    expect(dots[1].className).not.toContain('bg-slate-900');
   });
 
   it('supports typing with physical keyboard (digits, backspace, escape)', () => {
@@ -102,13 +102,13 @@ describe('AdminPinModal Component', () => {
     fireEvent.keyDown(window, { key: '8' });
 
     const dots = screen.getAllByTestId(/pin-dot-/);
-    expect(dots[0].className).toContain('bg-pole-red');
-    expect(dots[1].className).toContain('bg-pole-red');
-    expect(dots[2].className).not.toContain('bg-pole-red');
+    expect(dots[0].className).toContain('bg-slate-900');
+    expect(dots[1].className).toContain('bg-slate-900');
+    expect(dots[2].className).not.toContain('bg-slate-900');
 
     // Press Backspace
     fireEvent.keyDown(window, { key: 'Backspace' });
-    expect(dots[1].className).not.toContain('bg-pole-red');
+    expect(dots[1].className).not.toContain('bg-slate-900');
 
     // Press Escape
     fireEvent.keyDown(window, { key: 'Escape' });
@@ -180,7 +180,7 @@ describe('AdminPinModal Component', () => {
 
     // Verify pin was cleared so user can try again
     const dots = screen.getAllByTestId(/pin-dot-/);
-    expect(dots[0].className).not.toContain('bg-pole-red');
+    expect(dots[0].className).not.toContain('bg-slate-900');
   });
 
   it('calls onClose when close button or cancel button is clicked', () => {

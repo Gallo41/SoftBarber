@@ -100,138 +100,113 @@ export const AdminDashboard: React.FC = () => {
     {
       id: 3,
       professional_id: 1,
-      customer_name: 'Matheus Rocha',
-      customer_phone: '(11) 97654-5566',
+      customer_name: 'Felipe Rocha',
+      customer_phone: '(11) 97665-5566',
       service_id: 3,
       service_name: 'Combo Cabelo + Barba',
       service_duration: 60,
       service_price: 70.0,
       date: todayStr,
-      start_time: '11:30',
-      end_time: '12:30',
-      status: AppointmentStatus.CONFIRMED,
+      start_time: '11:00',
+      end_time: '12:00',
+      status: AppointmentStatus.BOOKED,
       payment_type: PaymentType.AVULSO_LOCAL,
     },
     {
       id: 4,
       professional_id: 1,
-      customer_name: 'Felipe Almeida',
-      customer_phone: '(11) 96543-7788',
+      customer_name: 'Mateus Castro',
+      customer_phone: '(11) 96554-7788',
       service_id: 1,
       service_name: 'Corte Tradicional Masculino',
       service_duration: 30,
       service_price: 45.0,
       date: todayStr,
-      start_time: '14:00',
-      end_time: '14:30',
+      start_time: '14:30',
+      end_time: '15:00',
       status: AppointmentStatus.BOOKED,
       payment_type: PaymentType.PACKAGE_CREDIT,
     },
     {
       id: 5,
       professional_id: 1,
-      customer_name: 'Rodrigo Mendes',
-      customer_phone: '(11) 95432-9900',
-      service_id: 1,
-      service_name: 'Corte Tradicional Masculino',
-      service_duration: 30,
-      service_price: 45.0,
+      customer_name: 'Bruno Alves',
+      customer_phone: '(11) 95443-9900',
+      service_id: 4,
+      service_name: 'Acabamento & Pezinho',
+      service_duration: 15,
+      service_price: 20.0,
       date: todayStr,
       start_time: '16:00',
-      end_time: '16:30',
-      status: AppointmentStatus.BOOKED,
-      payment_type: PaymentType.AVULSO_LOCAL,
+      end_time: '16:15',
+      status: AppointmentStatus.CANCELLED,
+      payment_type: PaymentType.PACKAGE_CREDIT,
     },
     {
       id: 6,
       professional_id: 2,
-      customer_name: 'André Carvalho',
-      customer_phone: '(11) 94321-2211',
-      service_id: 2,
-      service_name: 'Barba Terapia Completa',
-      service_duration: 30,
-      service_price: 35.0,
-      date: todayStr,
-      start_time: '10:30',
-      end_time: '11:00',
-      status: AppointmentStatus.COMPLETED,
-      payment_type: PaymentType.PACKAGE_CREDIT,
-    },
-    {
-      id: 7,
-      professional_id: 2,
-      customer_name: 'Thiago Nogueira',
-      customer_phone: '(11) 93210-4433',
+      customer_name: 'Rodrigo Lima',
+      customer_phone: '(11) 94332-1122',
       service_id: 1,
       service_name: 'Corte Tradicional Masculino',
       service_duration: 30,
       service_price: 45.0,
       date: todayStr,
-      start_time: '15:00',
-      end_time: '15:30',
-      status: AppointmentStatus.CONFIRMED,
-      payment_type: PaymentType.AVULSO_LOCAL,
-    },
-    {
-      id: 8,
-      professional_id: 1,
-      customer_name: 'Eduardo Ramos',
-      customer_phone: '(11) 92109-6655',
-      service_id: 3,
-      service_name: 'Combo Cabelo + Barba',
-      service_duration: 60,
-      service_price: 70.0,
-      date: tomorrowStr,
-      start_time: '10:00',
+      start_time: '10:30',
       end_time: '11:00',
       status: AppointmentStatus.BOOKED,
-      payment_type: PaymentType.PACKAGE_CREDIT,
+      payment_type: PaymentType.AVULSO_LOCAL,
     },
   ]);
 
-  // Filtered appointments for currently selected professional and date
+  // Filtered appointments for the chosen professional and date
   const filteredAppointments = useMemo(() => {
     return appointmentsList
       .filter(
-        (appt) =>
-          appt.professional_id === selectedProfessionalId &&
-          appt.date === selectedDate
+        (a) =>
+          a.professional_id === selectedProfessionalId &&
+          a.date === selectedDate
       )
       .sort((a, b) => a.start_time.localeCompare(b.start_time));
   }, [appointmentsList, selectedProfessionalId, selectedDate]);
 
-  // Daily Metrics
+  // Computed KPI Metrics for the selected date & professional
   const dailyMetrics = useMemo(() => {
-    const totalAppointments = filteredAppointments.length;
+    const totalAppointments = filteredAppointments.filter(
+      (a) => a.status !== AppointmentStatus.CANCELLED
+    ).length;
+
+    const completedCount = filteredAppointments.filter(
+      (a) => a.status === AppointmentStatus.COMPLETED
+    ).length;
+
     const creditUsedCount = filteredAppointments.filter(
       (a) =>
         a.payment_type === PaymentType.PACKAGE_CREDIT &&
         a.status !== AppointmentStatus.CANCELLED
     ).length;
 
-    // Total available daily capacity assuming ~8 slots per day
-    const estimatedDailyCapacity = 8;
-    const nonCancelledCount = filteredAppointments.filter(
-      (a) => a.status !== AppointmentStatus.CANCELLED
-    ).length;
-    const occupancyRate = Math.min(
-      100,
-      Math.round((nonCancelledCount / estimatedDailyCapacity) * 100)
-    );
-
     const estimatedTotalRevenue = filteredAppointments
       .filter((a) => a.status !== AppointmentStatus.CANCELLED)
       .reduce((sum, a) => sum + a.service_price, 0);
 
+    // Theoretical maximum capacity: 8 hours * 2 appointments per hour = 16 slots
+    const capacitySlots = 16;
+    const occupancyRate = Math.min(
+      100,
+      Math.round((totalAppointments / capacitySlots) * 100)
+    );
+
     return {
       totalAppointments,
+      completedCount,
       creditUsedCount,
       occupancyRate,
       estimatedTotalRevenue,
     };
   }, [filteredAppointments]);
 
-  // Action handlers to update appointment statuses
+  // Status transition handler
   const handleUpdateStatus = (
     appointmentId: number,
     newStatus: AppointmentStatus
@@ -250,14 +225,14 @@ export const AdminDashboard: React.FC = () => {
       {/* 1. Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-paper-dark border-[1.5px] border-ink text-ink font-sign uppercase tracking-wider text-xs font-semibold mb-2 shadow-stamp-sm">
-            <Scissors size={13} strokeWidth={1.75} />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-semibold mb-2">
+            <Scissors size={13} strokeWidth={2} />
             <span>Gestão do Salão & Agenda</span>
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
+          <h1 className="font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
             Painel da Barbearia
           </h1>
-          <p className="text-xs sm:text-sm text-ink-soft mt-1 font-medium">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-normal">
             Controle de horários do dia, conferência de créditos e status de atendimento.
           </p>
         </div>
@@ -265,8 +240,8 @@ export const AdminDashboard: React.FC = () => {
         {/* Filters: Professional & Date Selection */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Professional Selector */}
-          <div className="flex items-center gap-1.5 bg-paper-dark border-[1.5px] border-ink rounded-sm p-1 shadow-sm">
-            <span className="sign-label pl-2 hidden sm:inline">
+          <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/60 select-none">
+            <span className="text-xs font-semibold text-slate-500 pl-2 pr-1 hidden sm:inline">
               Profissional:
             </span>
             {DEFAULT_PROFESSIONALS.map((prof) => {
@@ -277,11 +252,11 @@ export const AdminDashboard: React.FC = () => {
                   type="button"
                   onClick={() => setSelectedProfessionalId(prof.id)}
                   className={`
-                    px-3 py-1.5 rounded-sm font-sign uppercase tracking-wider text-xs font-semibold transition-all select-none
+                    px-3 py-1.5 rounded-lg text-xs font-medium transition-all select-none
                     ${
                       isSelected
-                        ? 'bg-ink text-card shadow-sm font-bold'
-                        : 'text-ink-soft hover:text-ink hover:bg-paper'
+                        ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                        : 'text-slate-600 hover:text-slate-900'
                     }
                   `}
                 >
@@ -292,16 +267,16 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Date Selector */}
-          <div className="flex items-center gap-1.5 bg-paper-dark border-[1.5px] border-ink rounded-sm p-1 shadow-sm">
+          <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/60 select-none">
             <button
               type="button"
               onClick={() => setSelectedDate(todayStr)}
               className={`
-                px-3 py-1.5 rounded-sm font-sign uppercase tracking-wider text-xs font-semibold transition-all select-none
+                px-3 py-1.5 rounded-lg text-xs font-medium transition-all select-none
                 ${
                   selectedDate === todayStr
-                    ? 'bg-ink text-card shadow-sm font-bold'
-                    : 'text-ink-soft hover:text-ink hover:bg-paper'
+                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }
               `}
             >
@@ -311,11 +286,11 @@ export const AdminDashboard: React.FC = () => {
               type="button"
               onClick={() => setSelectedDate(tomorrowStr)}
               className={`
-                px-3 py-1.5 rounded-sm font-sign uppercase tracking-wider text-xs font-semibold transition-all select-none
+                px-3 py-1.5 rounded-lg text-xs font-medium transition-all select-none
                 ${
                   selectedDate === tomorrowStr
-                    ? 'bg-ink text-card shadow-sm font-bold'
-                    : 'text-ink-soft hover:text-ink hover:bg-paper'
+                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900'
                 }
               `}
             >
@@ -326,7 +301,7 @@ export const AdminDashboard: React.FC = () => {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-card border border-ink rounded-sm px-2 py-1 text-xs text-ink font-sign uppercase focus:outline-none focus:border-pole-red"
+              className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:border-slate-900 ml-1"
             />
           </div>
         </div>
@@ -335,76 +310,76 @@ export const AdminDashboard: React.FC = () => {
       {/* 2. Daily Metrics KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Agendamentos */}
-        <div className="p-5 card-paper shadow-stamp-sm">
+        <div className="p-5 card-clean">
           <div className="flex items-center justify-between mb-2">
-            <span className="sign-label">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Agendamentos do Dia
             </span>
-            <div className="p-1.5 rounded-sm bg-paper-dark border border-ink text-ink shadow-sm">
-              <CalendarCheck2 size={15} />
+            <div className="p-2 rounded-xl bg-slate-100 text-slate-700">
+              <CalendarCheck2 size={16} />
             </div>
           </div>
-          <div className="font-display text-3xl sm:text-4xl text-ink">
+          <div className="text-3xl sm:text-4xl font-bold text-slate-900 tabular-nums">
             {dailyMetrics.totalAppointments}
           </div>
-          <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-1 block">
+          <span className="text-xs text-slate-400 mt-1 block">
             {selectedProfObj.name} em {selectedDate}
           </span>
         </div>
 
         {/* Card 2: Créditos Utilizados */}
-        <div className="p-5 card-paper shadow-stamp-sm">
+        <div className="p-5 card-clean">
           <div className="flex items-center justify-between mb-2">
-            <span className="sign-label">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Créditos Utilizados
             </span>
-            <div className="p-1.5 rounded-sm bg-paper-dark border border-ink text-pole-red shadow-sm">
-              <Wallet size={15} />
+            <div className="p-2 rounded-xl bg-slate-100 text-blue-600">
+              <Wallet size={16} />
             </div>
           </div>
-          <div className="font-display text-3xl sm:text-4xl text-pole-red">
+          <div className="text-3xl sm:text-4xl font-bold text-slate-900 tabular-nums">
             {dailyMetrics.creditUsedCount}
           </div>
-          <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-1 block">
+          <span className="text-xs text-slate-400 mt-1 block">
             Debitado de pacotes ativos
           </span>
         </div>
 
         {/* Card 3: Taxa de Ocupação */}
-        <div className="p-5 card-paper shadow-stamp-sm">
+        <div className="p-5 card-clean">
           <div className="flex items-center justify-between mb-2">
-            <span className="sign-label">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Taxa de Ocupação
             </span>
-            <div className="p-1.5 rounded-sm bg-moss-tint border border-moss text-moss shadow-sm">
-              <Percent size={15} />
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+              <Percent size={16} />
             </div>
           </div>
-          <div className="font-display text-3xl sm:text-4xl text-ink">
+          <div className="text-3xl sm:text-4xl font-bold text-slate-900 tabular-nums">
             {dailyMetrics.occupancyRate}%
           </div>
-          <div className="w-full bg-paper-deep border border-ink h-2 mt-2">
+          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
             <div
-              className="bg-moss h-full"
+              className="bg-emerald-600 h-full rounded-full transition-all duration-300"
               style={{ width: `${dailyMetrics.occupancyRate}%` }}
             />
           </div>
         </div>
 
         {/* Card 4: Faturamento Estimado */}
-        <div className="p-5 card-paper shadow-stamp-sm">
+        <div className="p-5 card-clean">
           <div className="flex items-center justify-between mb-2">
-            <span className="sign-label">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Valor da Grade
             </span>
-            <div className="p-1.5 rounded-sm bg-paper-dark border border-ink text-ink shadow-sm">
-              <DollarSign size={15} />
+            <div className="p-2 rounded-xl bg-slate-100 text-slate-700">
+              <DollarSign size={16} />
             </div>
           </div>
-          <div className="font-display text-3xl sm:text-4xl text-pole-red">
+          <div className="text-3xl sm:text-4xl font-bold text-slate-900 tabular-nums">
             {formatCurrencyBRL(dailyMetrics.estimatedTotalRevenue)}
           </div>
-          <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-1 block">
+          <span className="text-xs text-slate-400 mt-1 block">
             Soma dos atendimentos
           </span>
         </div>
@@ -414,23 +389,23 @@ export const AdminDashboard: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock size={18} className="text-pole-red" />
-            <h2 className="font-display text-xl text-ink">
+            <Clock size={18} className="text-slate-500" />
+            <h2 className="font-bold text-lg text-slate-900 tracking-tight">
               Linha do Tempo da Agenda ({filteredAppointments.length} agendamentos)
             </h2>
           </div>
-          <span className="font-sign uppercase tracking-wider text-xs text-ink-muted">
+          <span className="text-xs text-slate-500 font-medium">
             {selectedProfObj.name} • {selectedDate}
           </span>
         </div>
 
         {filteredAppointments.length === 0 ? (
-          <div className="p-12 card-paper text-center flex flex-col items-center justify-center space-y-3 shadow-stamp-sm">
-            <Calendar size={36} className="text-ink-muted" strokeWidth={1.75} />
-            <h3 className="font-display text-lg text-ink">
+          <div className="p-12 card-clean text-center flex flex-col items-center justify-center space-y-3">
+            <Calendar size={36} className="text-slate-300" strokeWidth={1.5} />
+            <h3 className="font-semibold text-base text-slate-900">
               Nenhum agendamento para esta data
             </h3>
-            <p className="font-sign uppercase tracking-wider text-xs text-ink-soft max-w-sm">
+            <p className="text-xs text-slate-500 max-w-sm">
               Não existem horários reservados para {selectedProfObj.name} no dia {selectedDate}.
             </p>
           </div>
@@ -445,24 +420,24 @@ export const AdminDashboard: React.FC = () => {
                 <div
                   key={appt.id}
                   className={`
-                    p-4 sm:p-5 card-paper transition-all duration-150 flex flex-col md:flex-row md:items-center justify-between gap-4
+                    p-4 sm:p-5 card-clean transition-all duration-150 flex flex-col md:flex-row md:items-center justify-between gap-4
                     ${
                       appt.status === AppointmentStatus.COMPLETED
-                        ? 'bg-paper-dark/60 border-dashed opacity-80'
+                        ? 'bg-slate-50/70 border-slate-200/50 opacity-80'
                         : appt.status === AppointmentStatus.CANCELLED
-                        ? 'bg-pole-red-tint/30 border-pole-red opacity-70'
-                        : 'shadow-stamp-sm hover:shadow-stamp'
+                        ? 'bg-rose-50/40 border-rose-200/50 opacity-70'
+                        : 'hover:border-slate-300 hover:shadow-sm'
                     }
                   `}
                 >
                   {/* Left: Time and Client Info */}
                   <div className="flex items-start sm:items-center gap-4">
                     {/* Time Slot Box */}
-                    <div className="px-3.5 py-2 rounded-sm bg-paper-dark border-[1.5px] border-ink text-center shrink-0 shadow-stamp-sm">
-                      <span className="font-display text-lg text-pole-red block leading-tight">
+                    <div className="px-3.5 py-2 rounded-xl bg-slate-100 text-center shrink-0">
+                      <span className="text-base font-bold text-slate-900 block leading-tight tabular-nums">
                         {appt.start_time}
                       </span>
-                      <span className="font-sign uppercase text-[10px] text-ink-muted">
+                      <span className="text-[10px] text-slate-500 tabular-nums">
                         {appt.end_time}
                       </span>
                     </div>
@@ -470,24 +445,24 @@ export const AdminDashboard: React.FC = () => {
                     {/* Customer & Service Details */}
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-display text-base text-ink">
+                        <span className="font-semibold text-base text-slate-900">
                           {appt.customer_name}
                         </span>
                         {appt.customer_phone && (
-                          <span className="font-sign uppercase text-xs text-ink-muted">
+                          <span className="text-xs text-slate-400">
                             ({appt.customer_phone})
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2 text-xs text-ink-soft mt-1 flex-wrap">
-                        <span className="font-semibold text-ink">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mt-1 flex-wrap">
+                        <span className="font-medium text-slate-800">
                           {appt.service_name}
                         </span>
                         <span>•</span>
                         <span>{appt.service_duration} min</span>
                         <span>•</span>
-                        <span className="font-display text-sm text-pole-red font-semibold">
+                        <span className="text-xs font-bold text-slate-900 tabular-nums">
                           {formatCurrencyBRL(appt.service_price)}
                         </span>
                       </div>
@@ -495,7 +470,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
 
                   {/* Right: Badges & Management Actions */}
-                  <div className="flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-ink-line">
+                  <div className="flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
                     <div className="flex items-center gap-2">
                       {/* Payment Type Badge */}
                       {appt.payment_type === PaymentType.PACKAGE_CREDIT ? (
@@ -547,7 +522,7 @@ export const AdminDashboard: React.FC = () => {
                             handleUpdateStatus(appt.id, AppointmentStatus.CANCELLED)
                           }
                           title="Cancelar agendamento"
-                          className="p-1.5 rounded-sm text-ink-muted hover:text-pole-red hover:bg-pole-red-tint border border-transparent hover:border-pole-red transition-colors"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                         >
                           <X size={16} />
                         </button>
@@ -562,10 +537,10 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* 4. Help & Policies Card */}
-      <div className="p-5 card-paper bg-paper-dark flex items-start gap-3.5 text-xs text-ink-soft shadow-stamp-sm">
-        <User size={18} className="text-pole-red shrink-0 mt-0.5" />
+      <div className="p-5 card-clean bg-slate-50/70 border-slate-200/70 flex items-start gap-3.5 text-xs text-slate-600">
+        <User size={18} className="text-slate-500 shrink-0 mt-0.5" />
         <div>
-          <span className="font-semibold text-ink font-sign uppercase">
+          <span className="font-semibold text-slate-800">
             Regra de Estorno e Auditoria de Créditos:
           </span>{' '}
           Quando um cliente cancela com mais de 2 horas de antecedência, o sistema estorna

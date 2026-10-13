@@ -52,7 +52,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 z-40 bg-card border-t-[1.5px] border-ink md:hidden safe-area-bottom shadow-lg ${className}`}
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 md:hidden safe-area-bottom shadow-lg ${className}`}
       aria-label="Navegação móvel do cliente"
     >
       <div className="grid grid-cols-4 h-16 max-w-md mx-auto px-2">
@@ -66,38 +66,40 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               type="button"
               onClick={() => onTabChange(item.id)}
               className={`
-                relative flex flex-col items-center justify-center py-1 transition-colors select-none font-sign uppercase tracking-wider
+                relative flex flex-col items-center justify-center py-1 transition-all select-none
                 ${
                   isActive
-                    ? 'text-pole-red font-semibold'
-                    : 'text-ink-muted hover:text-ink'
+                    ? 'text-slate-900 font-semibold'
+                    : 'text-slate-400 hover:text-slate-600 font-medium'
                 }
               `}
+              aria-current={isActive ? 'page' : undefined}
             >
               <div className="relative">
                 <Icon
                   size={20}
-                  strokeWidth={isActive ? 2 : 1.75}
-                  className={`transition-transform duration-150 ${
-                    isActive ? 'scale-105 text-pole-red' : 'text-ink-soft'
-                  }`}
+                  strokeWidth={isActive ? 2.25 : 1.75}
+                  className="transition-transform duration-150"
                 />
 
-                {/* Badge indicator */}
-                {item.badgeCount !== undefined && item.badgeCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-sm bg-pole-red text-card text-[10px] font-sign font-bold flex items-center justify-center leading-none border border-ink">
+                {/* Badge counter if present */}
+                {Boolean(item.badgeCount && item.badgeCount > 0) && (
+                  <span
+                    className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-slate-900 text-white text-[10px] font-bold flex items-center justify-center shadow-xs"
+                    aria-label={`${item.badgeCount} pendentes`}
+                  >
                     {item.badgeCount}
                   </span>
                 )}
               </div>
 
-              <span className="text-[10px] mt-1 leading-none">
+              <span className="text-[11px] mt-1 tracking-tight leading-none">
                 {item.label}
               </span>
 
-              {/* Active Tab Indicator Bar */}
+              {/* Active bar pill indicator */}
               {isActive && (
-                <span className="absolute bottom-0 w-8 h-0.5 bg-pole-red" />
+                <span className="absolute bottom-1 w-6 h-0.5 rounded-full bg-slate-900" />
               )}
             </button>
           );

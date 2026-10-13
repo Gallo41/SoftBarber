@@ -86,21 +86,16 @@ export function formatAppointmentTimeRange(
 }
 
 /**
- * Formats full timestamp for cancelled_at or created_at.
+ * Formats full timestamp for cancellation audit note (e.g. "12/10 às 15:30").
  */
-export function formatFullTimestamp(dateStr?: string | null): string {
-  if (!dateStr) return '';
+function formatFullTimestamp(dateStr: string): string {
   try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
-    return new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).format(date);
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${day}/${month} às ${hours}:${minutes}`;
   } catch {
     return dateStr;
   }
@@ -115,7 +110,7 @@ export interface RefundEligibilityInfo {
 }
 
 /**
- * Calculates refund eligibility based on the 2-hour cancellation deadline.
+ * Calculates refund eligibility based on the cancellation policy window.
  */
 export function calculateRefundEligibility(
   startIso: string,
@@ -222,7 +217,7 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
   return (
     <div
       className={`
-        card-paper p-5 shadow-stamp-sm hover:shadow-stamp
+        card-clean p-5 hover:border-slate-300 hover:shadow-sm
         transition-all duration-150 flex flex-col justify-between
         ${className}
       `}
@@ -231,15 +226,15 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
         {/* Top Header: Date/Time & Status Badge */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink shrink-0 shadow-stamp-sm">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 shrink-0">
               <Calendar size={18} />
             </div>
             <div>
-              <h4 className="font-display text-base sm:text-lg text-ink leading-tight">
+              <h4 className="font-semibold text-base sm:text-lg text-slate-900 leading-tight">
                 {formatAppointmentDate(appointment.start_time)}
               </h4>
-              <div className="flex items-center gap-1.5 font-sign uppercase tracking-wider text-xs text-pole-red mt-0.5">
-                <Clock size={12} className="text-pole-red shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-0.5">
+                <Clock size={12} className="text-slate-400 shrink-0" />
                 <span>
                   {formatAppointmentTimeRange(
                     appointment.start_time,
@@ -255,34 +250,34 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
           </div>
         </div>
 
-        {/* Appointment Details - Receipt Rows */}
-        <div className="space-y-2 py-3 border-y-[1.5px] border-ink text-sm">
+        {/* Appointment Details List */}
+        <div className="space-y-2 py-3 border-y border-slate-100 text-sm">
           {/* Service */}
-          <div className="flex items-center justify-between gap-2 pb-1 border-b border-dashed border-ink-line">
-            <div className="sign-label flex items-center gap-1.5">
-              <Scissors size={13} className="text-pole-red shrink-0" />
+          <div className="flex items-center justify-between gap-2 pb-1 border-b border-slate-100/70">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+              <Scissors size={13} className="text-slate-400 shrink-0" />
               <span>Serviço</span>
             </div>
-            <span className="font-semibold text-ink text-right">
+            <span className="font-semibold text-slate-900 text-right">
               {resolvedServiceName}
             </span>
           </div>
 
           {/* Professional */}
-          <div className="flex items-center justify-between gap-2 pb-1 border-b border-dashed border-ink-line">
-            <div className="sign-label flex items-center gap-1.5">
-              <User size={13} className="text-ink-soft shrink-0" />
+          <div className="flex items-center justify-between gap-2 pb-1 border-b border-slate-100/70">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+              <User size={13} className="text-slate-400 shrink-0" />
               <span>Profissional</span>
             </div>
-            <span className="text-ink-soft text-right font-medium">
+            <span className="text-slate-700 text-right font-medium">
               {resolvedProfessionalName}
             </span>
           </div>
 
           {/* Payment Type */}
           <div className="flex items-center justify-between gap-2 pt-0.5">
-            <div className="sign-label flex items-center gap-1.5">
-              <PaymentIcon size={13} className="text-ink-soft shrink-0" />
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+              <PaymentIcon size={13} className="text-slate-400 shrink-0" />
               <span>Pagamento</span>
             </div>
             <Badge variant={paymentConfig.variant} size="sm" dot={false}>
@@ -293,18 +288,18 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
 
         {/* Conditional Banners: Refund status or Cancellation note */}
         {isCancelled && (
-          <div className="mt-3.5 p-3 rounded-sm bg-pole-red-tint border-[1.5px] border-pole-red text-xs space-y-1 text-pole-red">
-            <div className="font-sign uppercase tracking-wider font-semibold flex items-center gap-1.5">
+          <div className="mt-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs space-y-1 text-rose-700">
+            <div className="font-semibold flex items-center gap-1.5">
               <Ban size={13} />
               <span>Horário Cancelado</span>
               {appointment.cancelled_at && (
-                <span className="text-ink-soft font-normal">
+                <span className="text-slate-500 font-normal">
                   • {formatFullTimestamp(appointment.cancelled_at)}
                 </span>
               )}
             </div>
             {appointment.cancellation_reason && (
-              <p className="text-ink italic">
+              <p className="text-slate-700 italic">
                 Motivo: &quot;{appointment.cancellation_reason}&quot;
               </p>
             )}
@@ -315,15 +310,15 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
         {canCancel && isPackagePayment && (
           <div className="mt-3.5">
             {refundInfo.isEligible ? (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-sm bg-moss-tint border-[1.5px] border-moss text-xs text-moss font-sign uppercase tracking-wider">
-                <CheckCircle2 size={14} className="shrink-0" />
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-800 font-medium">
+                <CheckCircle2 size={14} className="shrink-0 text-emerald-600" />
                 <span>
                   Estorno de crédito garantido (restam {refundInfo.formattedRemaining})
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-sm bg-mustard-tint border-[1.5px] border-mustard text-xs text-mustard font-sign uppercase tracking-wider">
-                <AlertTriangle size={14} className="shrink-0 text-mustard" />
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200/80 text-xs text-amber-800 font-medium">
+                <AlertTriangle size={14} className="shrink-0 text-amber-600" />
                 <span>
                   Atenção: menos de {cancellationWindowHours}h do início (sem estorno de crédito)
                 </span>
@@ -335,12 +330,12 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
 
       {/* Action Footer */}
       {canCancel && onCancelClick && (
-        <div className="mt-4 pt-3 border-t-[1.5px] border-ink flex justify-end">
+        <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onCancelClick(appointment)}
-            className="hover:border-pole-red hover:text-pole-red hover:bg-pole-red-tint"
+            className="hover:border-rose-300 hover:text-rose-700 hover:bg-rose-50"
             leftIcon={<Ban size={14} />}
           >
             Cancelar Horário

@@ -43,21 +43,18 @@ export const InstallAppBanner: React.FC<InstallAppBannerProps> = ({
     <>
       <aside
         aria-label="Instalar aplicativo"
-        className={`bg-card border-[1.5px] border-ink rounded-sm p-4 shadow-stamp-sm relative overflow-hidden pt-5 ${className}`}
+        className={`bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs relative overflow-hidden ${className}`}
       >
-        {/* Barber pole top stripe */}
-        <div className="pole-stripe absolute top-0 left-0 right-0" />
-
-        <div className="flex items-center justify-between gap-3 relative z-10">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-pole-red shrink-0 shadow-stamp-sm">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 shrink-0">
               <Download size={20} strokeWidth={2} />
             </div>
             <div>
-              <h3 className="font-display text-base text-ink tracking-tight">
+              <h3 className="font-semibold text-sm sm:text-base text-slate-900 tracking-tight">
                 Instalar Aplicativo SoftBarber
               </h3>
-              <p className="text-xs text-ink-soft mt-0.5 line-clamp-1">
+              <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
                 Acesse seus horários e créditos direto da tela de início sem digitar URL.
               </p>
             </div>
@@ -77,7 +74,7 @@ export const InstallAppBanner: React.FC<InstallAppBannerProps> = ({
             <button
               type="button"
               onClick={dismiss}
-              className="p-1 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-dark transition-colors border border-transparent hover:border-ink"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               aria-label="Dispensar aviso de instalação"
               title="Dispensar"
             >

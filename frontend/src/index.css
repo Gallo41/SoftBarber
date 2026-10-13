@@ -16,11 +16,9 @@ body {
   margin: 0;
   min-height: 100vh;
   min-height: -webkit-fill-available;
-  background-color: #F2EADB;
-  /* Grão de papel sutil (ruído SVG inline, sem requisição extra) */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  color: #1C1A17;
-  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background-color: #F8FAFC;
+  color: #0F172A;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Mobile touch & gesture ergonomics */
   -webkit-tap-highlight-color: transparent;
@@ -28,8 +26,8 @@ body {
 }
 
 ::selection {
-  background: #A8261D;
-  color: #FAF5EA;
+  background: #0F172A;
+  color: #FFFFFF;
 }
 
 /* Make touch actions responsive with no 300ms delay */
@@ -38,35 +36,25 @@ button, a, input, select {
 }
 
 @layer components {
-  /* Cartão de papel com borda de tinta */
-  .card-paper {
-    @apply bg-card border-[1.5px] border-ink rounded-sm;
+  /* Cartão limpo com borda fina e sombra suave (Apple/Linear) */
+  .card-clean {
+    @apply bg-white border border-slate-200/90 rounded-2xl shadow-xs;
   }
 
-  /* Rótulo estilo placa pintada */
-  .sign-label {
-    @apply font-sign uppercase tracking-[0.14em] text-[0.7rem] font-medium text-ink-soft;
+  /* Rótulo de seção minimalista */
+  .label-clean {
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
   }
 
-  /* Título de seção em serifa display */
-  .title-display {
-    @apply font-display text-ink leading-tight;
+  /* Título de seção limpo */
+  .title-clean {
+    @apply font-bold text-slate-900 tracking-tight;
   }
 
-  /* Campos de formulário */
-  .input-paper {
-    @apply w-full bg-card border-[1.5px] border-ink rounded-sm px-3 py-2.5 text-ink placeholder:text-ink-muted
-      focus:outline-none focus:ring-0 focus:border-pole-red focus:shadow-stamp-sm transition-colors;
-  }
-
-  /* Faixa do poste de barbeiro */
-  .pole-stripe {
-    @apply h-1.5 w-full bg-pole-stripes;
-  }
-
-  /* Filete duplo, como em letreiros antigos */
-  .rule-double {
-    @apply border-t-[3px] border-double border-ink;
+  /* Campos de formulário limpos */
+  .input-clean {
+    @apply w-full bg-slate-50/70 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400
+      focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-all text-sm;
   }
 }
 
@@ -86,7 +74,7 @@ button, a, input, select {
 /* Animations */
 @keyframes slideUp {
   from {
-    transform: translateY(100%);
+    transform: translateY(12px);
     opacity: 0;
   }
   to {
@@ -105,9 +93,9 @@ button, a, input, select {
 }
 
 .animate-slide-up {
-  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.2s ease-out forwards;
+  animation: fadeIn 0.15s ease-out forwards;
 }

@@ -20,21 +20,21 @@ describe('Button Component', () => {
   it('renders primary variant by default and applies styling', () => {
     render(<Button>Primário</Button>);
     const button = screen.getByRole('button', { name: /primário/i });
-    expect(button.className).toContain('bg-pole-red');
+    expect(button.className).toContain('bg-slate-900');
   });
 
   it('renders other variants (outline, danger, secondary, ghost)', () => {
     const { rerender } = render(<Button variant="outline">Outline</Button>);
-    expect(screen.getByRole('button').className).toContain('border-ink');
+    expect(screen.getByRole('button').className).toContain('border-slate-200');
 
     rerender(<Button variant="danger">Danger</Button>);
-    expect(screen.getByRole('button').className).toContain('text-pole-red');
+    expect(screen.getByRole('button').className).toContain('text-rose-700');
 
     rerender(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button').className).toContain('bg-paper-dark');
+    expect(screen.getByRole('button').className).toContain('bg-slate-100');
 
     rerender(<Button variant="ghost">Ghost</Button>);
-    expect(screen.getByRole('button').className).toContain('hover:bg-paper-dark');
+    expect(screen.getByRole('button').className).toContain('hover:bg-slate-100/80');
   });
 
   it('handles click events when enabled', () => {
@@ -95,7 +95,7 @@ describe('Badge Component', () => {
   it('maps PackageStatus.ACTIVE correctly to Ativo with success styles', () => {
     const { container } = render(<Badge status={PackageStatus.ACTIVE} />);
     expect(screen.getByText('Ativo')).toBeInTheDocument();
-    expect(container.firstChild).toHaveClass('text-moss');
+    expect(container.firstChild).toHaveClass('text-emerald-700');
   });
 
   it('maps PackageStatus.EXPIRED correctly to Expirado', () => {
@@ -126,7 +126,7 @@ describe('Badge Component', () => {
 
   it('respects variant prop override', () => {
     const { container } = render(<Badge variant="danger">Alerta</Badge>);
-    expect(container.firstChild).toHaveClass('text-pole-red');
+    expect(container.firstChild).toHaveClass('text-rose-700');
   });
 
   it('hides indicator dot when dot={false}', () => {

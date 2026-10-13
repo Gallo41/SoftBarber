@@ -1,23 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { UserCheck, X, Loader2, Phone, User, Mail } from 'lucide-react';
+import { UserCheck, Phone, User, Mail, X, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Customer } from '../../types/api';
+import { Button } from '../common/Button';
 
 export interface CustomerLoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess?: (customer: Customer) => void;
+  onSuccess?: (customer?: Customer) => void;
   className?: string;
 }
 
 /**
- * Format raw numbers or unformatted strings to Brazilian phone format:
- * - 11 digits: (XX) XXXXX-XXXX
- * - 10 digits: (XX) XXXX-XXXX
+ * Masks raw digits into a readable Brazilian mobile phone format:
+ * (11) 98765-4321 or (11) 8765-4321
  */
 export function formatBrazilianPhone(value: string): string {
   const digits = value.replace(/\D/g, '').slice(0, 11);
   if (!digits) return '';
+
   if (digits.length <= 2) {
     return `(${digits}`;
   }
@@ -36,25 +37,14 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
   onSuccess,
   className = '',
 }) => {
-  let auth: ReturnType<typeof useAuth> | undefined;
-  try {
-    auth = useAuth();
-  } catch {
-    auth = undefined;
-  }
-  const loginCustomer =
-    auth?.loginCustomer ??
-    (async () => {
-      throw new Error('useAuth must be used within an AuthProvider');
-    });
-
+  const { loginCustomer } = useAuth();
   const [phone, setPhone] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Reset form when modal opens
+  // Reset form when opened
   useEffect(() => {
     if (isOpen) {
       setPhone('');
@@ -108,15 +98,15 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
       );
 
       if (onSuccess) {
-        onSuccess(response.customer);
+        onSuccess(response?.customer);
       }
       onClose();
     } catch (err: any) {
-      const errorMsg =
+      setError(
         err?.response?.data?.detail ||
         err?.message ||
-        'Não foi possível identificar o cliente. Tente novamente.';
-      setError(errorMsg);
+        'Erro ao identificar cliente. Tente novamente.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -129,35 +119,32 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="customer-login-title"
-      className={`fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4 animate-fade-in ${className}`}
+      className={`fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in ${className}`}
     >
-      <div className="bg-card border-[1.5px] border-ink rounded-sm p-6 sm:p-8 max-w-md w-full shadow-stamp-lg text-ink relative pt-8 overflow-hidden animate-slide-up">
-        {/* Barber pole top stripe */}
-        <div className="pole-stripe absolute top-0 left-0 right-0" />
-
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-slate-900 relative animate-slide-up overflow-hidden">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
           aria-label="Fechar"
-          className="absolute top-3.5 right-3.5 p-1.5 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-dark border border-transparent hover:border-ink transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
         >
           <X size={20} />
         </button>
 
         {/* Header Icon & Title */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-12 h-12 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink mb-3 shadow-stamp-sm">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-800 mb-3 shadow-xs">
             <UserCheck size={24} strokeWidth={2} />
           </div>
 
           <h2
             id="customer-login-title"
-            className="font-display text-2xl text-ink tracking-tight"
+            className="font-bold text-xl sm:text-2xl text-slate-900 tracking-tight"
           >
             Identifique-se
           </h2>
-          <p className="font-sign uppercase tracking-wider text-[11px] text-ink-soft mt-1 max-w-xs">
+          <p className="text-xs text-slate-500 mt-1 max-w-xs">
             Digite seu WhatsApp para acessar seus créditos e agendamentos
           </p>
         </div>
@@ -167,7 +154,7 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <div
             role="alert"
             data-testid="customer-login-error"
-            className="mb-4 p-3 rounded-sm bg-pole-red-tint border-[1.5px] border-pole-red text-pole-red text-xs text-center font-medium"
+            className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs text-center font-medium"
           >
             {error}
           </div>
@@ -179,12 +166,12 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <div>
             <label
               htmlFor="customer-phone"
-              className="block font-sign uppercase tracking-wider text-xs text-ink mb-1"
+              className="block text-xs font-semibold text-slate-700 mb-1.5"
             >
-              Telefone / WhatsApp <span className="text-pole-red">*</span>
+              Telefone / WhatsApp <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 <Phone size={16} />
               </div>
               <input
@@ -194,7 +181,7 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
                 onChange={handlePhoneChange}
                 placeholder="(11) 98765-4321"
                 disabled={isLoading}
-                className="input-paper pl-9 text-sm"
+                className="input-clean pl-10"
               />
             </div>
           </div>
@@ -203,12 +190,12 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
           <div>
             <label
               htmlFor="customer-name"
-              className="block font-sign uppercase tracking-wider text-xs text-ink mb-1"
+              className="block text-xs font-semibold text-slate-700 mb-1.5"
             >
               Nome Completo
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 <User size={16} />
               </div>
               <input
@@ -218,24 +205,21 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome (ex: João Silva)"
                 disabled={isLoading}
-                className="input-paper pl-9 text-sm"
+                className="input-clean pl-10"
               />
             </div>
-            <p className="font-sign uppercase tracking-wider text-[10px] text-ink-muted mt-1">
-              Opcional para quem já tem cadastro, obrigatório no primeiro acesso.
-            </p>
           </div>
 
-          {/* Email Field */}
+          {/* Email Field (Optional) */}
           <div>
             <label
               htmlFor="customer-email"
-              className="block font-sign uppercase tracking-wider text-xs text-ink mb-1"
+              className="block text-xs font-semibold text-slate-700 mb-1.5"
             >
-              E-mail (opcional)
+              E-mail <span className="text-slate-400 font-normal">(Opcional)</span>
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-muted">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 <Mail size={16} />
               </div>
               <input
@@ -243,28 +227,35 @@ export const CustomerLoginModal: React.FC<CustomerLoginModalProps> = ({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com (opcional)"
+                placeholder="seuemail@exemplo.com"
                 disabled={isLoading}
-                className="input-paper pl-9 text-sm"
+                className="input-clean pl-10"
               />
             </div>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full mt-2 py-3 px-4 bg-pole-red hover:bg-pole-red-dark text-card font-sign uppercase tracking-wider font-semibold rounded-sm text-sm border-[1.5px] border-ink shadow-stamp-sm active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all flex items-center justify-center gap-2 disabled:opacity-50 select-none"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                <span>Identificando...</span>
-              </>
-            ) : (
-              <span>Entrar / Identificar</span>
-            )}
-          </button>
+          {/* Action Buttons */}
+          <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              isLoading={isLoading}
+              loadingText="Identificando..."
+              rightIcon={<ArrowRight size={15} />}
+            >
+              Entrar e Ver Créditos
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isLoading}
+              onClick={onClose}
+              className="sm:w-auto"
+            >
+              Cancelar
+            </Button>
+          </div>
         </form>
       </div>
     </div>

@@ -51,12 +51,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         }
       }}
       className={`
-        card-paper p-5 transition-all duration-150 cursor-pointer select-none
+        card-clean p-5 transition-all duration-150 cursor-pointer select-none
         flex flex-col justify-between
         ${
           isSelected
-            ? 'border-pole-red shadow-stamp ring-1 ring-pole-red'
-            : 'shadow-stamp-sm hover:shadow-stamp hover:border-ink'
+            ? 'border-slate-900 ring-2 ring-slate-900/10 shadow-sm'
+            : 'hover:border-slate-300 hover:shadow-sm'
         }
         ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
         ${className}
@@ -68,29 +68,29 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           <div className="flex items-center gap-3">
             <div
               className={`
-                w-10 h-10 rounded-sm flex items-center justify-center shrink-0 border-[1.5px] border-ink transition-colors shadow-stamp-sm
+                w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors
                 ${
                   isSelected
-                    ? 'bg-pole-red text-card border-ink'
-                    : 'bg-paper-dark text-ink'
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-slate-100 text-slate-800'
                 }
               `}
             >
-              <Scissors size={18} strokeWidth={1.75} />
+              <Scissors size={18} strokeWidth={2} />
             </div>
             <div>
-              <h3 className="font-display text-base sm:text-lg text-ink leading-snug">
+              <h3 className="font-semibold text-base sm:text-lg text-slate-900 leading-snug">
                 {service.name}
               </h3>
-              <div className="flex items-center gap-1.5 font-sign uppercase tracking-wider text-xs text-ink-muted mt-0.5">
-                <Clock size={12} className="text-pole-red" />
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-0.5">
+                <Clock size={12} className="text-slate-400" />
                 <span>{service.duration_minutes} min de duração</span>
               </div>
             </div>
           </div>
 
           {isSelected && (
-            <div className="text-pole-red">
+            <div className="text-slate-900">
               <CheckCircle2 size={20} />
             </div>
           )}
@@ -98,19 +98,19 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
         {/* Description */}
         {service.description && (
-          <p className="text-xs sm:text-sm text-ink-soft mb-4 line-clamp-2">
+          <p className="text-xs sm:text-sm text-slate-500 mb-4 line-clamp-2">
             {service.description}
           </p>
         )}
       </div>
 
       {/* Bottom Section: Price / Credits & Action Button */}
-      <div className="pt-3 border-t-[1.5px] border-ink flex items-center justify-between gap-3 mt-2">
+      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3 mt-2">
         <div className="flex flex-col">
-          <span className="sign-label">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             Valor
           </span>
-          <span className="font-display text-xl sm:text-2xl text-pole-red">
+          <span className="text-lg sm:text-xl font-bold text-slate-900 tabular-nums">
             {formatCurrencyBRL(service.price)}
           </span>
         </div>

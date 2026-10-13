@@ -89,69 +89,81 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
   onDateChange,
   className = '',
 }) => {
-  const next7Days = useMemo(() => generateNext7Days(), []);
-  const initialDate = selectedDate || next7Days[0]?.dateString || toLocalDateString(new Date());
-
-  const [activeDate, setActiveDate] = useState<string>(initialDate);
+  const todayStr = useMemo(() => toLocalDateString(new Date()), []);
+  const [activeDate, setActiveDate] = useState<string>(selectedDate || todayStr);
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [refreshIndex, setRefreshIndex] = useState<number>(0);
 
-  // Sync internal activeDate with selectedDate prop if provided
+  // Sync state if selectedDate prop changes externally
   useEffect(() => {
     if (selectedDate && selectedDate !== activeDate) {
       setActiveDate(selectedDate);
     }
   }, [selectedDate]);
 
+  const next7Days = useMemo(() => generateNext7Days(new Date()), []);
+
+  const fetchSlots = useCallback(
+    async (targetDate: string) => {
+      if (!professionalId || !serviceId) return;
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const fetched = await getAvailableSlots({
+          professionalId,
+          serviceId,
+          date: targetDate,
+        });
+        setSlots(Array.isArray(fetched) ? fetched : fetched.slots || []);
+      } catch (err: any) {
+        setError(
+          err?.response?.data?.detail ||
+            'Não foi possível carregar os horários disponíveis. Tente novamente.'
+        );
+        setSlots([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [professionalId, serviceId]
+  );
+
+  useEffect(() => {
+    fetchSlots(activeDate);
+  }, [fetchSlots, activeDate]);
+
   const handleDateClick = (dateStr: string) => {
     setActiveDate(dateStr);
-    onDateChange?.(dateStr);
+    if (onDateChange) {
+      onDateChange(dateStr);
+    }
   };
 
   const handleRefresh = () => {
-    setRefreshIndex((prev) => prev + 1);
+    fetchSlots(activeDate);
   };
 
-  // Fetch slots whenever professional, service, activeDate or refresh changes
-  const fetchSlots = useCallback(async () => {
-    if (!professionalId || !serviceId || !activeDate) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await getAvailableSlots(professionalId, serviceId, activeDate);
-      setSlots(response.slots || []);
-    } catch (err) {
-      console.error('Error fetching available slots:', err);
-      setError('Não foi possível carregar os horários para esta data.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [professionalId, serviceId, activeDate]);
-
-  useEffect(() => {
-    fetchSlots();
-  }, [fetchSlots, refreshIndex]);
-
-  // Check if a slot is selected
   const isSlotActive = (slot: AvailableSlot) => {
     if (!selectedSlot) return false;
-    return selectedSlot.start_time === slot.start_time;
+    return (
+      selectedSlot.start_time === slot.start_time &&
+      selectedSlot.end_time === slot.end_time
+    );
   };
 
   return (
     <div className={`space-y-5 ${className}`}>
-      {/* 1. Date Selector (7 Days Horizontal Scroller) */}
+      {/* 1. Date Selector: 7-day horizontal pills */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <div className="sign-label flex items-center gap-1.5 text-ink">
-            <CalendarIcon size={14} className="text-pole-red" />
+        <div className="flex items-center justify-between mb-2.5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <CalendarIcon size={14} className="text-slate-500" />
             <span>Selecione a Data</span>
           </div>
-          <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted">Próximos 7 dias</span>
+          <span className="text-xs text-slate-400">Próximos 7 dias</span>
         </div>
 
         <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
@@ -164,29 +176,28 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
                 type="button"
                 onClick={() => handleDateClick(day.dateString)}
                 className={`
-                  flex flex-col items-center justify-center py-2 px-1 rounded-sm
+                  flex flex-col items-center justify-center py-2.5 px-1 rounded-xl
                   transition-all duration-150 select-none text-center
-                  border-[1.5px]
                   ${
                     isSelected
-                      ? 'bg-ink text-card border-ink shadow-stamp-sm font-bold'
-                      : 'bg-card text-ink border-ink hover:bg-paper-dark'
+                      ? 'bg-slate-900 text-white shadow-sm font-bold'
+                      : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 shadow-xs'
                   }
                 `}
               >
                 <span
-                  className={`font-sign uppercase tracking-wider text-[10px] ${
-                    isSelected ? 'text-card' : 'text-ink-muted'
+                  className={`text-[10px] font-medium tracking-tight uppercase ${
+                    isSelected ? 'text-slate-300' : 'text-slate-400'
                   }`}
                 >
                   {day.isToday ? 'Hoje' : day.dayOfWeek}
                 </span>
-                <span className="font-display text-base sm:text-xl mt-0.5 leading-none">
+                <span className="text-base sm:text-lg font-bold mt-0.5 leading-none">
                   {day.dayNumber}
                 </span>
                 <span
-                  className={`font-sign uppercase text-[9px] mt-0.5 ${
-                    isSelected ? 'text-card' : 'text-ink-soft'
+                  className={`text-[9px] mt-0.5 ${
+                    isSelected ? 'text-slate-300' : 'text-slate-400'
                   }`}
                 >
                   {day.monthName}
@@ -199,8 +210,8 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
 
       {/* 2. Slots Header & Refresh */}
       <div className="flex items-center justify-between pt-1">
-        <div className="sign-label flex items-center gap-1.5 text-ink">
-          <Clock size={14} className="text-pole-red" />
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+          <Clock size={14} className="text-slate-500" />
           <span>Horários Disponíveis</span>
         </div>
 
@@ -209,7 +220,7 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
           onClick={handleRefresh}
           disabled={isLoading}
           title="Atualizar horários"
-          className="font-sign uppercase tracking-wider text-xs text-ink-muted hover:text-ink transition-colors flex items-center gap-1.5 disabled:opacity-50"
+          className="text-xs text-slate-400 hover:text-slate-700 transition-colors flex items-center gap-1.5 disabled:opacity-50 font-medium"
         >
           <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
           <span>Atualizar</span>
@@ -223,27 +234,27 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-10 rounded-sm bg-paper-dark border border-ink-line animate-pulse flex items-center justify-center"
+                className="h-10 rounded-xl bg-slate-100 animate-pulse flex items-center justify-center"
               >
-                <div className="h-4 w-12 bg-paper-deep rounded-sm" />
+                <div className="h-4 w-12 bg-slate-200 rounded-md" />
               </div>
             ))}
           </div>
         ) : error ? (
-          <div className="p-4 rounded-sm bg-pole-red-tint border-[1.5px] border-pole-red text-center flex flex-col items-center justify-center gap-2">
-            <AlertCircle size={24} className="text-pole-red" />
-            <p className="text-xs text-pole-red font-medium">{error}</p>
+          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-center flex flex-col items-center justify-center gap-2">
+            <AlertCircle size={24} className="text-rose-500" />
+            <p className="text-xs text-rose-700 font-medium">{error}</p>
             <Button size="sm" variant="outline" onClick={handleRefresh} className="mt-1">
               Tentar Novamente
             </Button>
           </div>
         ) : slots.length === 0 ? (
-          <div className="p-8 rounded-sm card-paper text-center flex flex-col items-center justify-center shadow-stamp-sm">
-            <Clock size={28} className="text-ink-muted mb-2" strokeWidth={1.75} />
-            <p className="font-display text-base text-ink">
+          <div className="p-8 rounded-2xl card-clean text-center flex flex-col items-center justify-center">
+            <Clock size={28} className="text-slate-300 mb-2" strokeWidth={1.5} />
+            <p className="text-sm font-semibold text-slate-800">
               Nenhum horário disponível para esta data.
             </p>
-            <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-1 max-w-xs">
+            <p className="text-xs text-slate-500 mt-1 max-w-xs">
               Todos os horários estão preenchidos ou o profissional não atende neste dia.
               Tente selecionar outra data acima.
             </p>
@@ -260,12 +271,12 @@ export const SlotPicker: React.FC<SlotPickerProps> = ({
                   type="button"
                   onClick={() => onSelectSlot(slot, activeDate)}
                   className={`
-                    py-2 px-3 rounded-sm font-sign uppercase tracking-wider text-xs sm:text-sm font-semibold transition-all duration-150 select-none
-                    border-[1.5px] flex items-center justify-center
+                    py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-150 select-none
+                    flex items-center justify-center tabular-nums
                     ${
                       active
-                        ? 'bg-pole-red text-card border-ink shadow-stamp-sm font-bold'
-                        : 'bg-card text-ink border-ink hover:bg-paper-dark shadow-stamp-sm active:shadow-none'
+                        ? 'bg-slate-900 text-white shadow-xs font-bold ring-1 ring-slate-900'
+                        : 'bg-white text-slate-800 border border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 shadow-xs'
                     }
                   `}
                 >

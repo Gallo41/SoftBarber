@@ -32,59 +32,58 @@ const statusConfigMap: Record<
 
 const variantClasses: Record<BadgeVariant, { container: string; dot: string }> = {
   success: {
-    container: 'bg-moss-tint text-moss border-moss',
-    dot: 'bg-moss',
+    container: 'bg-emerald-50 text-emerald-700 border-emerald-200/70',
+    dot: 'bg-emerald-500',
   },
   warning: {
-    container: 'bg-mustard-tint text-mustard border-mustard',
-    dot: 'bg-mustard',
+    container: 'bg-amber-50 text-amber-700 border-amber-200/70',
+    dot: 'bg-amber-500',
   },
   danger: {
-    container: 'bg-pole-red-tint text-pole-red border-pole-red',
-    dot: 'bg-pole-red',
+    container: 'bg-rose-50 text-rose-700 border-rose-200/70',
+    dot: 'bg-rose-500',
   },
   info: {
-    container: 'bg-pole-blue-tint text-pole-blue border-pole-blue',
-    dot: 'bg-pole-blue',
+    container: 'bg-sky-50 text-sky-700 border-sky-200/70',
+    dot: 'bg-sky-500',
   },
   brand: {
-    container: 'bg-ink text-card border-ink',
-    dot: 'bg-pole-red',
+    container: 'bg-blue-50 text-blue-700 border-blue-200/70',
+    dot: 'bg-blue-500',
   },
   neutral: {
-    container: 'bg-paper-dark text-ink-soft border-ink-muted',
-    dot: 'bg-ink-muted',
+    container: 'bg-slate-100 text-slate-700 border-slate-200/70',
+    dot: 'bg-slate-400',
   },
 };
 
 const sizeClasses: Record<BadgeSize, string> = {
-  sm: 'px-2 py-0.5 text-[0.68rem]',
-  md: 'px-2.5 py-1 text-xs',
+  sm: 'px-2 py-0.5 text-[11px] gap-1.5',
+  md: 'px-2.5 py-1 text-xs gap-1.5',
 };
 
 export const Badge: React.FC<BadgeProps> = ({
   status,
   variant,
-  size = 'sm',
+  size = 'md',
   dot = true,
   children,
   className = '',
   ...rest
 }) => {
-  // Determine variant and label
-  const resolvedStatusConfig = status ? statusConfigMap[status] : undefined;
-  const effectiveVariant = variant || resolvedStatusConfig?.variant || 'neutral';
-  const displayLabel = children ?? resolvedStatusConfig?.label ?? status ?? '';
+  // Resolve configuration from status string if provided, fallback to neutral
+  const config = status ? statusConfigMap[status] : undefined;
+  const effectiveVariant: BadgeVariant = variant ?? config?.variant ?? 'neutral';
+  const label = children ?? config?.label ?? status ?? '';
 
-  const { container: containerStyle, dot: dotStyle } = variantClasses[effectiveVariant];
+  const styles = variantClasses[effectiveVariant];
 
   return (
     <span
       className={`
-        inline-flex items-center gap-1.5 rounded-sm border
-        font-sign uppercase tracking-[0.1em] font-medium
-        transition-colors select-none
-        ${containerStyle}
+        inline-flex items-center font-medium rounded-full border
+        tracking-tight select-none
+        ${styles.container}
         ${sizeClasses[size]}
         ${className}
       `}
@@ -92,11 +91,13 @@ export const Badge: React.FC<BadgeProps> = ({
     >
       {dot && (
         <span
-          className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotStyle}`}
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${styles.dot}`}
           aria-hidden="true"
         />
       )}
-      <span>{displayLabel}</span>
+      <span>{label}</span>
     </span>
   );
 };
+
+export default Badge;

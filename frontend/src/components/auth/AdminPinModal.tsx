@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Lock, X, Delete, RotateCcw, Loader2 } from 'lucide-react';
+import { Lock, X, RotateCcw, Delete, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export interface AdminPinModalProps {
@@ -15,18 +15,12 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
   onSuccess,
   className = '',
 }) => {
-  let auth: ReturnType<typeof useAuth> | undefined;
-  try {
-    auth = useAuth();
-  } catch {
-    auth = undefined;
-  }
-  const loginAdmin = auth?.loginAdmin ?? (async () => { throw new Error('useAuth must be used within an AuthProvider'); });
+  const { loginAdmin } = useAuth();
   const [pin, setPin] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Reset internal state when modal opens
+  // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
       setPin('');
@@ -39,19 +33,18 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
     async (pinToSubmit: string) => {
       setIsLoading(true);
       setError(null);
+
       try {
-        await loginAdmin(pinToSubmit);
-        setPin('');
-        if (onSuccess) {
-          onSuccess();
+        const success = await loginAdmin(pinToSubmit);
+        if (success) {
+          if (onSuccess) onSuccess();
+          onClose();
+        } else {
+          setError('PIN incorreto. Tente novamente.');
+          setPin('');
         }
-        onClose();
       } catch (err: any) {
-        const errorMsg =
-          err?.response?.data?.detail ||
-          err?.message ||
-          'PIN de administrador incorreto.';
-        setError(errorMsg);
+        setError(err?.response?.data?.detail || err?.message || 'Erro ao autenticar. Tente novamente.');
         setPin('');
       } finally {
         setIsLoading(false);
@@ -116,35 +109,32 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-pin-title"
-      className={`fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4 animate-fade-in ${className}`}
+      className={`fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in ${className}`}
     >
-      <div className="bg-card border-[1.5px] border-ink rounded-sm p-6 sm:p-8 max-w-sm w-full shadow-stamp-lg text-ink flex flex-col items-center relative pt-8 overflow-hidden animate-slide-up">
-        {/* Barber pole top stripe */}
-        <div className="pole-stripe absolute top-0 left-0 right-0" />
-
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-slate-900 flex flex-col items-center relative animate-slide-up overflow-hidden">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
           aria-label="Fechar"
-          className="absolute top-3.5 right-3.5 p-1.5 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-dark border border-transparent hover:border-ink transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
         >
           <X size={20} />
         </button>
 
         {/* Lock Icon */}
-        <div className="w-12 h-12 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink mb-3 shadow-stamp-sm">
+        <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-800 mb-3 shadow-xs">
           <Lock size={22} strokeWidth={2} />
         </div>
 
         {/* Title & Description */}
         <h2
           id="admin-pin-title"
-          className="font-display text-2xl text-ink text-center tracking-tight"
+          className="font-bold text-xl sm:text-2xl text-slate-900 text-center tracking-tight"
         >
           Acesso Administrativo
         </h2>
-        <p className="font-sign uppercase tracking-wider text-[11px] text-ink-soft text-center mt-1 mb-4">
+        <p className="text-xs text-slate-500 text-center mt-1 mb-4">
           Digite o PIN de 4 dígitos para gerenciar o painel
         </p>
 
@@ -159,11 +149,11 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
               <div
                 key={index}
                 data-testid={`pin-dot-${index}`}
-                className={`w-4 h-4 rounded-full border-[1.5px] transition-all duration-150 ${
+                className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-150 ${
                   isFilled
-                    ? 'bg-pole-red border-ink scale-110 shadow-stamp-sm'
-                    : 'bg-transparent border-ink'
-                } ${error ? 'border-pole-red' : ''}`}
+                    ? 'bg-slate-900 border-slate-900 scale-110 shadow-xs'
+                    : 'bg-transparent border-slate-300'
+                } ${error ? 'border-rose-500 bg-rose-500' : ''}`}
               />
             );
           })}
@@ -172,14 +162,14 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
         {/* Error message / Loading feedback */}
         <div className="min-h-[28px] flex items-center justify-center my-1 w-full">
           {isLoading ? (
-            <div className="flex items-center gap-2 text-xs font-sign uppercase tracking-wider text-pole-red">
+            <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
               <Loader2 size={14} className="animate-spin" />
               <span>Verificando PIN...</span>
             </div>
           ) : error ? (
             <p
               role="alert"
-              className="text-xs font-semibold text-pole-red text-center"
+              className="text-xs font-semibold text-rose-600 text-center"
               data-testid="pin-error"
             >
               {error}
@@ -187,15 +177,15 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
           ) : null}
         </div>
 
-        {/* Touch Numpad */}
-        <div className="grid grid-cols-3 gap-2.5 w-full max-w-[280px] mt-2 select-none">
+        {/* iOS-Style Touch Numpad */}
+        <div className="grid grid-cols-3 gap-3 w-full max-w-[260px] mt-2 select-none justify-items-center">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
             <button
               key={digit}
               type="button"
               disabled={isLoading}
               onClick={() => handleDigit(digit.toString())}
-              className="h-13 sm:h-14 rounded-sm bg-card hover:bg-paper-dark active:bg-pole-red active:text-card disabled:opacity-50 font-display text-2xl text-ink transition-all border-[1.5px] border-ink shadow-stamp-sm flex items-center justify-center active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+              className="w-16 h-16 rounded-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 active:scale-95 disabled:opacity-50 text-2xl font-semibold text-slate-900 transition-all border border-slate-100 flex items-center justify-center shadow-xs"
             >
               {digit}
             </button>
@@ -206,10 +196,10 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
             type="button"
             disabled={isLoading || pin.length === 0}
             onClick={handleClear}
-            className="h-13 sm:h-14 rounded-sm bg-paper-dark hover:bg-paper-deep text-ink-soft hover:text-ink active:text-pole-red disabled:opacity-30 font-sign uppercase tracking-wider text-xs transition-all border-[1.5px] border-ink shadow-stamp-sm flex flex-col items-center justify-center gap-0.5 active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+            className="w-16 h-16 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 active:scale-95 disabled:opacity-30 text-xs font-medium transition-all flex flex-col items-center justify-center gap-0.5"
           >
-            <RotateCcw size={15} />
-            <span>Limpar</span>
+            <RotateCcw size={16} />
+            <span className="text-[10px]">Limpar</span>
           </button>
 
           {/* Digit: 0 */}
@@ -217,7 +207,7 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
             type="button"
             disabled={isLoading}
             onClick={() => handleDigit('0')}
-            className="h-13 sm:h-14 rounded-sm bg-card hover:bg-paper-dark active:bg-pole-red active:text-card disabled:opacity-50 font-display text-2xl text-ink transition-all border-[1.5px] border-ink shadow-stamp-sm flex items-center justify-center active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+            className="w-16 h-16 rounded-full bg-slate-50 hover:bg-slate-100 active:bg-slate-200 active:scale-95 disabled:opacity-50 text-2xl font-semibold text-slate-900 transition-all border border-slate-100 flex items-center justify-center shadow-xs"
           >
             0
           </button>
@@ -227,10 +217,10 @@ export const AdminPinModal: React.FC<AdminPinModalProps> = ({
             type="button"
             disabled={isLoading || pin.length === 0}
             onClick={handleBackspace}
-            className="h-13 sm:h-14 rounded-sm bg-paper-dark hover:bg-paper-deep text-ink-soft hover:text-ink active:text-pole-red disabled:opacity-30 font-sign uppercase tracking-wider text-xs transition-all border-[1.5px] border-ink shadow-stamp-sm flex flex-col items-center justify-center gap-0.5 active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+            className="w-16 h-16 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 active:scale-95 disabled:opacity-30 text-xs font-medium transition-all flex flex-col items-center justify-center gap-0.5"
           >
-            <Delete size={16} />
-            <span>Apagar</span>
+            <Delete size={17} />
+            <span className="text-[10px]">Apagar</span>
           </button>
         </div>
       </div>

@@ -51,7 +51,7 @@ export const PackageCard: React.FC<PackageCardProps> = ({
   return (
     <div
       className={`
-        card-paper p-6 shadow-stamp-sm hover:shadow-stamp
+        card-clean p-6 hover:border-slate-300 hover:shadow-sm
         flex flex-col justify-between transition-all duration-150
         ${className}
       `}
@@ -60,15 +60,15 @@ export const PackageCard: React.FC<PackageCardProps> = ({
       <div>
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink shrink-0 shadow-stamp-sm">
-              <Package size={20} strokeWidth={1.75} />
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 shrink-0">
+              <Package size={20} strokeWidth={2} />
             </div>
             <div>
-              <h3 className="font-display text-lg sm:text-xl text-ink leading-snug">
+              <h3 className="font-semibold text-lg text-slate-900 leading-snug">
                 {pkg.name}
               </h3>
-              <div className="flex items-center gap-1.5 font-sign uppercase tracking-wider text-xs text-ink-muted mt-0.5">
-                <Clock size={12} className="text-pole-red" />
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-0.5">
+                <Clock size={12} className="text-slate-400" />
                 <span>Validade: {pkg.validity_days} dias</span>
               </div>
             </div>
@@ -77,25 +77,25 @@ export const PackageCard: React.FC<PackageCardProps> = ({
 
         {/* Description */}
         {pkg.description && (
-          <p className="text-xs sm:text-sm text-ink-soft mb-4 line-clamp-2">
+          <p className="text-xs sm:text-sm text-slate-500 mb-4 line-clamp-2">
             {pkg.description}
           </p>
         )}
 
-        {/* Price display - Voucher ticket cutout style */}
-        <div className="mb-5 p-3 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-baseline justify-between shadow-sm">
-          <span className="sign-label">
+        {/* Price display */}
+        <div className="mb-5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-baseline justify-between">
+          <span className="text-xs font-semibold text-slate-500">
             Preço do Pacote
           </span>
-          <span className="font-display text-2xl text-pole-red">
+          <span className="text-xl sm:text-2xl font-bold text-slate-900 tabular-nums">
             {formatCurrencyBRL(pkg.price)}
           </span>
         </div>
 
         {/* Included Services List */}
         <div className="space-y-2 mb-6">
-          <div className="sign-label flex items-center gap-1.5">
-            <span>Sessões Inclusas</span>
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Sessões Inclusas
           </div>
 
           <ul className="space-y-2">
@@ -106,21 +106,21 @@ export const PackageCard: React.FC<PackageCardProps> = ({
                 return (
                   <li
                     key={item.id || item.service_id}
-                    className="flex items-center gap-2 text-sm text-ink pb-1 border-b border-dashed border-ink-line"
+                    className="flex items-center gap-2 text-sm text-slate-800 pb-1.5 border-b border-slate-100"
                   >
                     <CheckCircle2
                       size={15}
-                      className="text-moss shrink-0"
+                      className="text-emerald-600 shrink-0"
                     />
-                    <span className="font-sign uppercase font-bold text-pole-red">
+                    <span className="font-bold text-slate-900">
                       {item.quantity}x
                     </span>
-                    <span className="text-ink font-medium">{serviceName}</span>
+                    <span className="text-slate-700 font-medium">{serviceName}</span>
                   </li>
                 );
               })
             ) : (
-              <li className="text-xs text-ink-muted italic">
+              <li className="text-xs text-slate-400 italic">
                 Nenhum serviço discriminado
               </li>
             )}
@@ -129,7 +129,7 @@ export const PackageCard: React.FC<PackageCardProps> = ({
       </div>
 
       {/* Action Footer */}
-      <div className="pt-4 border-t-[1.5px] border-ink">
+      <div className="pt-4 border-t border-slate-100">
         <Button
           variant="primary"
           fullWidth

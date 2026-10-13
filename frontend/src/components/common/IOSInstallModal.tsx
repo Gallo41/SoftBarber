@@ -12,20 +12,17 @@ export const IOSInstallModal: React.FC<IOSInstallModalProps> = ({ isOpen, onClos
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-ink/60 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="ios-install-title"
     >
-      <div className="w-full max-w-md bg-card border-[1.5px] border-ink rounded-sm p-6 shadow-stamp-lg relative animate-slide-up pt-7 overflow-hidden">
-        {/* Barber pole top stripe */}
-        <div className="pole-stripe absolute top-0 left-0 right-0" />
-
+      <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl relative animate-slide-up overflow-hidden">
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-sm text-ink-muted hover:text-ink hover:bg-paper-dark border border-transparent hover:border-ink transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           aria-label="Fechar instruções"
         >
           <X size={20} />
@@ -33,14 +30,14 @@ export const IOSInstallModal: React.FC<IOSInstallModalProps> = ({ isOpen, onClos
 
         {/* Header */}
         <div className="flex items-center gap-3.5 mb-5">
-          <div className="w-11 h-11 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-pole-red shadow-stamp-sm">
+          <div className="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800">
             <Smartphone size={22} strokeWidth={2} />
           </div>
           <div>
-            <h2 id="ios-install-title" className="font-display text-xl text-ink">
+            <h2 id="ios-install-title" className="font-bold text-lg text-slate-900 tracking-tight">
               Instalar no iPhone / iPad
             </h2>
-            <p className="font-sign uppercase tracking-wider text-[11px] text-ink-soft">
+            <p className="text-xs text-slate-500">
               Tenha o SoftBarber direto na sua tela inicial
             </p>
           </div>
@@ -48,53 +45,53 @@ export const IOSInstallModal: React.FC<IOSInstallModalProps> = ({ isOpen, onClos
 
         {/* Step-by-step instructions */}
         <div className="space-y-3 mb-6">
-          <div className="flex items-start gap-3 p-3 rounded-sm bg-paper-dark border-[1.5px] border-ink">
-            <div className="w-7 h-7 rounded-sm bg-card border border-ink flex items-center justify-center text-ink shrink-0 mt-0.5">
-              <Share size={15} />
+          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+            <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-blue-600 shrink-0 mt-0.5 shadow-xs">
+              <Share size={16} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-ink">
+              <p className="text-sm font-semibold text-slate-800">
                 1. Toque em Compartilhar
               </p>
-              <p className="text-xs text-ink-soft mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Na barra inferior do Safari, toque no ícone com a seta para cima.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-3 rounded-sm bg-paper-dark border-[1.5px] border-ink">
-            <div className="w-7 h-7 rounded-sm bg-card border border-ink flex items-center justify-center text-ink shrink-0 mt-0.5">
-              <PlusSquare size={15} />
+          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+            <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-700 shrink-0 mt-0.5 shadow-xs">
+              <PlusSquare size={16} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-ink">
+              <p className="text-sm font-semibold text-slate-800">
                 2. Adicionar à Tela de Início
               </p>
-              <p className="text-xs text-ink-soft mt-0.5">
-                Role o menu para baixo e selecione <span className="font-semibold text-ink">"Adicionar à Tela de Início"</span>.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Role para baixo e selecione &quot;Adicionar à Tela de Início&quot;.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-3 rounded-sm bg-paper-dark border-[1.5px] border-ink">
-            <div className="w-7 h-7 rounded-sm bg-card border border-ink flex items-center justify-center text-pole-red shrink-0 mt-0.5">
-              <Check size={16} strokeWidth={2.5} />
+          <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+            <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5 shadow-xs">
+              <Check size={16} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-ink">
-                3. Confirmar "Adicionar"
+              <p className="text-sm font-semibold text-slate-800">
+                3. Confirmar &quot;Adicionar&quot;
               </p>
-              <p className="text-xs text-ink-soft mt-0.5">
-                Toque em <span className="text-pole-red font-semibold">"Adicionar"</span> no canto superior direito para finalizar.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Toque em &quot;Adicionar&quot; no canto superior direito para finalizar.
               </p>
             </div>
           </div>
         </div>
 
+        {/* Close Action */}
         <Button
-          variant="primary"
           fullWidth
-          size="lg"
+          variant="primary"
           onClick={onClose}
         >
           Entendi, vou instalar

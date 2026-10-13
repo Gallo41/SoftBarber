@@ -128,30 +128,27 @@ export const CancelModal: React.FC<CancelModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-ink/60 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="cancel-modal-title"
     >
       <div
         className={`
-          relative w-full max-w-md bg-card border-[1.5px] border-ink rounded-sm shadow-stamp-lg
-          overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] animate-slide-up sm:animate-none pt-6
+          relative w-full max-w-md bg-white border border-slate-200/90 rounded-t-2xl sm:rounded-2xl shadow-2xl
+          overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] animate-slide-up sm:animate-none
           ${className}
         `}
       >
-        {/* Barber pole top stripe */}
-        <div className="pole-stripe absolute top-0 left-0 right-0" />
-
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b-[1.5px] border-ink">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-sm bg-pole-red-tint border border-pole-red text-pole-red flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
               <Ban size={16} strokeWidth={2} />
             </div>
             <h2
               id="cancel-modal-title"
-              className="font-display text-lg sm:text-xl text-ink"
+              className="font-bold text-lg text-slate-900 tracking-tight"
             >
               Cancelar Agendamento
             </h2>
@@ -160,7 +157,7 @@ export const CancelModal: React.FC<CancelModalProps> = ({
             type="button"
             onClick={handleClose}
             disabled={isSubmitting}
-            className="text-ink-muted hover:text-ink p-1 rounded-sm hover:bg-paper-dark border border-transparent hover:border-ink transition-colors disabled:opacity-50"
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50"
             aria-label="Fechar"
           >
             <X size={18} />
@@ -172,21 +169,21 @@ export const CancelModal: React.FC<CancelModalProps> = ({
           {/* View 1: Success State */}
           {cancelledResult ? (
             <div className="text-center py-4 space-y-4">
-              <div className="w-14 h-14 rounded-sm bg-moss-tint border-[1.5px] border-moss text-moss flex items-center justify-center mx-auto shadow-stamp-sm">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
                 <CheckCircle2 size={32} />
               </div>
               <div>
-                <h3 className="font-display text-xl text-ink">
+                <h3 className="font-bold text-xl text-slate-900 tracking-tight">
                   Agendamento Cancelado!
                 </h3>
-                <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-1">
+                <p className="text-xs text-slate-500 mt-1">
                   O horário foi desmarcado na agenda do profissional.
                 </p>
               </div>
 
               {isPackagePayment && refundInfo.isEligible && (
-                <div className="p-3.5 rounded-sm bg-moss-tint border-[1.5px] border-moss text-moss text-xs sm:text-sm flex items-center gap-2.5 text-left">
-                  <RefreshCw size={18} className="shrink-0 text-moss" />
+                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs sm:text-sm flex items-center gap-2.5 text-left">
+                  <RefreshCw size={18} className="shrink-0 text-emerald-600" />
                   <span>
                     <strong>1 crédito estornado:</strong> Seu crédito de pacote
                     foi devolvido com sucesso à sua carteira.
@@ -195,7 +192,7 @@ export const CancelModal: React.FC<CancelModalProps> = ({
               )}
 
               {isPackagePayment && !refundInfo.isEligible && (
-                <div className="p-3.5 rounded-sm bg-paper-dark border-[1.5px] border-ink text-ink-soft text-xs text-left">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-600 text-xs text-left">
                   Cancelamento realizado sem estorno de créditos por exceder o
                   prazo limite de {cancellationWindowHours}h.
                 </div>
@@ -210,32 +207,32 @@ export const CancelModal: React.FC<CancelModalProps> = ({
           ) : (
             /* View 2: Confirmation & Refund Policy Form */
             <form onSubmit={handleConfirmCancel} className="space-y-4">
-              {/* Appointment summary box - Vintage ticket receipt style */}
-              <div className="card-paper p-4 text-xs space-y-2">
-                <div className="flex items-center justify-between pb-1.5 border-b border-dashed border-ink-line">
-                  <span className="sign-label flex items-center gap-1.5">
-                    <Scissors size={13} className="text-pole-red" />
+              {/* Appointment summary box */}
+              <div className="bg-slate-50 border border-slate-200/70 rounded-xl p-4 text-xs space-y-2">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-medium flex items-center gap-1.5">
+                    <Scissors size={13} className="text-slate-400" />
                     Serviço:
                   </span>
-                  <span className="font-semibold text-ink">
+                  <span className="font-semibold text-slate-900">
                     {resolvedServiceName}
                   </span>
                 </div>
-                <div className="flex items-center justify-between pb-1.5 border-b border-dashed border-ink-line">
-                  <span className="sign-label flex items-center gap-1.5">
-                    <User size={13} className="text-ink-soft" />
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-medium flex items-center gap-1.5">
+                    <User size={13} className="text-slate-400" />
                     Profissional:
                   </span>
-                  <span className="font-semibold text-ink">
+                  <span className="font-semibold text-slate-900">
                     {resolvedProfessionalName}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="sign-label flex items-center gap-1.5">
-                    <Calendar size={13} className="text-ink-soft" />
+                  <span className="text-slate-500 font-medium flex items-center gap-1.5">
+                    <Calendar size={13} className="text-slate-400" />
                     Data e Horário:
                   </span>
-                  <span className="font-semibold text-pole-red font-sign uppercase">
+                  <span className="font-semibold text-slate-900">
                     {formatAppointmentDate(appointment.start_time)} às{' '}
                     {formatAppointmentTimeRange(
                       appointment.start_time,
@@ -248,9 +245,9 @@ export const CancelModal: React.FC<CancelModalProps> = ({
               {/* Dynamic Refund Rule Notice */}
               {isPackagePayment ? (
                 refundInfo.isEligible ? (
-                  <div className="p-3.5 rounded-sm bg-moss-tint border-[1.5px] border-moss text-moss text-xs space-y-1.5">
-                    <div className="flex items-center gap-2 font-sign uppercase tracking-wider font-semibold text-moss">
-                      <RefreshCw size={15} className="shrink-0" />
+                  <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs space-y-1.5">
+                    <div className="flex items-center gap-2 font-semibold text-emerald-800">
+                      <RefreshCw size={15} className="shrink-0 text-emerald-600" />
                       <span>Estorno de Crédito Garantido</span>
                     </div>
                     <p className="leading-relaxed">
@@ -261,9 +258,9 @@ export const CancelModal: React.FC<CancelModalProps> = ({
                     </p>
                   </div>
                 ) : (
-                  <div className="p-3.5 rounded-sm bg-mustard-tint border-[1.5px] border-mustard text-mustard text-xs space-y-1.5">
-                    <div className="flex items-center gap-2 font-sign uppercase tracking-wider font-semibold text-mustard">
-                      <AlertTriangle size={15} className="shrink-0" />
+                  <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs space-y-1.5">
+                    <div className="flex items-center gap-2 font-semibold text-amber-800">
+                      <AlertTriangle size={15} className="shrink-0 text-amber-600" />
                       <span>Atenção: Cancelamento sem Estorno</span>
                     </div>
                     <p className="leading-relaxed">
@@ -275,9 +272,9 @@ export const CancelModal: React.FC<CancelModalProps> = ({
                   </div>
                 )
               ) : (
-                <div className="p-3.5 rounded-sm bg-paper-dark border-[1.5px] border-ink text-ink-soft text-xs space-y-1">
-                  <div className="flex items-center gap-2 font-sign uppercase tracking-wider font-semibold text-ink">
-                    <Clock size={14} className="text-ink-muted" />
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-600 text-xs space-y-1">
+                  <div className="flex items-center gap-2 font-semibold text-slate-800">
+                    <Clock size={14} className="text-slate-400" />
                     <span>Cancelamento de Agendamento Avulso</span>
                   </div>
                   <p className="leading-relaxed">
@@ -291,7 +288,7 @@ export const CancelModal: React.FC<CancelModalProps> = ({
               <div className="space-y-1.5">
                 <label
                   htmlFor="cancellation-reason"
-                  className="block sign-label"
+                  className="block text-xs font-semibold text-slate-700"
                 >
                   Motivo do cancelamento (opcional):
                 </label>
@@ -302,14 +299,14 @@ export const CancelModal: React.FC<CancelModalProps> = ({
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="Ex: Tive um imprevisto de trabalho e não poderei comparecer..."
                   disabled={isSubmitting}
-                  className="input-paper text-xs sm:text-sm resize-none disabled:opacity-50"
+                  className="input-clean text-xs sm:text-sm resize-none disabled:opacity-50"
                   maxLength={255}
                 />
               </div>
 
               {/* Error Alert */}
               {errorMessage && (
-                <div className="p-3 rounded-sm bg-pole-red-tint border-[1.5px] border-pole-red text-pole-red text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
                   <AlertCircle size={15} className="shrink-0" />
                   <span>{errorMessage}</span>
                 </div>

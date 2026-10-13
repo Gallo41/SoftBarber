@@ -101,163 +101,89 @@ const AVAILABLE_PACKAGES: PackageResponse[] = [
   },
   {
     id: 2,
-    name: 'Clube VIP Barba & Cabelo (4x + 4x)',
-    description: 'Pacote premium completo: 4 cortes masculinos e 4 barba terapias. Máxima economia para manter o visual impecável.',
-    price: 220.0,
-    validity_days: 90,
+    name: 'Plano Barba Mensal (4 Sessões)',
+    description: 'Mantenha sua barba impecável o mês inteiro com 4 atendimentos de barboterapia.',
+    price: 110.0,
+    validity_days: 45,
     is_active: true,
     items: [
-      { id: 2, service_id: 1, quantity: 4 },
-      { id: 3, service_id: 2, quantity: 4 },
+      { id: 2, service_id: 2, quantity: 4 },
     ],
   },
   {
     id: 3,
-    name: 'Pacote Barba Clássica (3x)',
-    description: '3 sessões de barba terapia com toalha quente e esfoliação. Ideal para quem cuida da barba toda quinzena.',
-    price: 85.0,
-    validity_days: 45,
+    name: 'Pacote VIP Completo (2 Cortes + 2 Barbas)',
+    description: 'O pacote mais vantajoso para cuidar do visual completo com economia e prioridade.',
+    price: 135.0,
+    validity_days: 60,
     is_active: true,
     items: [
-      { id: 4, service_id: 2, quantity: 3 },
+      { id: 3, service_id: 1, quantity: 2 },
+      { id: 4, service_id: 2, quantity: 2 },
     ],
   },
 ];
-
-// Initial customer package with active credits
-const INITIAL_CUSTOMER_PACKAGES: CustomerPackageResponse[] = [
-  {
-    id: 101,
-    customer_id: 1,
-    package_id: 1,
-    status: PackageStatus.ACTIVE,
-    purchased_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    expires_at: new Date(Date.now() + 55 * 24 * 60 * 60 * 1000).toISOString(),
-    balances: [
-      {
-        id: 201,
-        customer_package_id: 101,
-        service_id: 1,
-        total_quantity: 4,
-        remaining_quantity: 3,
-      },
-    ],
-  },
-];
-
-// Initial appointments for demo customer (loaded dynamically from backend)
-const INITIAL_APPOINTMENTS: AppointmentResponse[] = [];
 
 export interface ClientPortalProps {
   activeTab: ClientNavTab;
   onTabChange: (tab: ClientNavTab) => void;
-  customerId?: number;
   className?: string;
 }
 
 export const ClientPortal: React.FC<ClientPortalProps> = ({
   activeTab,
   onTabChange,
-  customerId = 1,
   className = '',
 }) => {
-  // Consume useAuth safely
-  let auth: ReturnType<typeof useAuth> | undefined;
-  try {
-    auth = useAuth();
-  } catch {
-    auth = undefined;
-  }
-  const currentCustomer = auth?.currentCustomer ?? null;
-  const logoutCustomer = auth?.logoutCustomer ?? (() => {});
+  const { currentCustomer, logoutCustomer } = useAuth();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Reactive customer ID sync: uses current authenticated customer or fallback prop
-  const effectiveCustomerId = currentCustomer?.id ?? customerId ?? 1;
-
-  // Master lists
+  // Core Data States
   const [services] = useState<Service[]>(DEFAULT_SERVICES);
   const [professionals] = useState<Professional[]>(DEFAULT_PROFESSIONALS);
-  const [customerPackages, setCustomerPackages] = useState<CustomerPackageResponse[]>(
-    INITIAL_CUSTOMER_PACKAGES
-  );
-  const [appointments, setAppointments] = useState<AppointmentResponse[]>(
-    INITIAL_APPOINTMENTS
-  );
+  const [customerPackages, setCustomerPackages] = useState<CustomerPackageResponse[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
 
-  // Booking Flow State
+  // Selection states for booking flow
   const [selectedProfessional, setSelectedProfessional] = useState<Professional>(
     DEFAULT_PROFESSIONALS[0]
   );
-  const [selectedService, setSelectedService] = useState<Service | null>(
-    DEFAULT_SERVICES[0]
-  );
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(
     toLocalDateString(new Date())
   );
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Notifications feedback
+  // Feedback notifications
   const [notification, setNotification] = useState<{
-    type: 'success' | 'info' | 'error';
+    type: 'success' | 'error' | 'info';
     message: string;
   } | null>(null);
 
-  // Fetch real packages and appointments from backend if available
-  useEffect(() => {
-    let isMounted = true;
-    async function loadBackendData() {
-      try {
-        const pkgs = await getCustomerPackages(effectiveCustomerId);
-        if (isMounted && pkgs && pkgs.length > 0) {
-          setCustomerPackages(pkgs);
-        }
-      } catch {
-        // Keep initial mock packages if backend is offline
-      }
-
-      try {
-        const apts = await getCustomerAppointments(effectiveCustomerId);
-        if (isMounted && apts) {
-          setAppointments(apts);
-        }
-      } catch {
-        // Keep initial appointments if backend is offline
-      }
-    }
-    loadBackendData();
-    return () => {
-      isMounted = false;
-    };
-  }, [effectiveCustomerId]);
-
-  // Lookup maps for IDs to display names
+  // Efficient mappings for names
   const servicesMap = useMemo(() => {
-    const map: Record<number, string> = {};
-    services.forEach((s) => {
-      map[s.id] = s.name;
-    });
-    return map;
+    return services.reduce<Record<number, string>>((acc, s) => {
+      acc[s.id] = s.name;
+      return acc;
+    }, {});
   }, [services]);
 
   const professionalsMap = useMemo(() => {
-    const map: Record<number, string> = {};
-    professionals.forEach((p) => {
-      map[p.id] = p.name;
-    });
-    return map;
+    return professionals.reduce<Record<number, string>>((acc, p) => {
+      acc[p.id] = p.name;
+      return acc;
+    }, {});
   }, [professionals]);
 
   const packagesMap = useMemo(() => {
-    const map: Record<number, string> = {};
-    AVAILABLE_PACKAGES.forEach((pkg) => {
-      map[pkg.id] = pkg.name;
-    });
-    return map;
+    return AVAILABLE_PACKAGES.reduce<Record<number, string>>((acc, pkg) => {
+      acc[pkg.id] = pkg.name;
+      return acc;
+    }, {});
   }, []);
 
-  // Credit balance calculation per service ID
+  // Compute total available credits per service for badges
   const serviceCreditsMap = useMemo(() => {
     const map: Record<number, number> = {};
     const now = new Date();
@@ -276,27 +202,92 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
   // Total active credits across all services
   const totalActiveCredits = useMemo(() => {
-    return Object.values(serviceCreditsMap).reduce((acc, curr) => acc + curr, 0);
+    return Object.values(serviceCreditsMap).reduce((a, b) => a + b, 0);
   }, [serviceCreditsMap]);
 
   // Count upcoming appointments
   const upcomingCount = useMemo(() => {
     const now = Date.now();
-    return appointments.filter(
-      (a) =>
-        (a.status === AppointmentStatus.BOOKED ||
-          a.status === AppointmentStatus.CONFIRMED) &&
-        new Date(a.start_time).getTime() > now
-    ).length;
+    return appointments.filter((appt) => {
+      const isBooked =
+        appt.status === AppointmentStatus.BOOKED ||
+        appt.status === AppointmentStatus.CONFIRMED;
+      return isBooked && new Date(appt.start_time).getTime() > now;
+    }).length;
   }, [appointments]);
 
-  // Show banner alert with auto-dismiss
+  const effectiveCustomerId = currentCustomer?.id ?? 1;
+
+  // Load customer packages & appointments
+  const loadUserData = useCallback(async () => {
+    try {
+      const [pkgs, appts] = await Promise.all([
+        getCustomerPackages(effectiveCustomerId).catch(() => []),
+        getCustomerAppointments(effectiveCustomerId).catch(() => []),
+      ]);
+
+      if (pkgs && pkgs.length > 0) {
+        setCustomerPackages(pkgs);
+      } else {
+        // Initial mock balance if new customer
+        setCustomerPackages([
+          {
+            id: 101,
+            customer_id: effectiveCustomerId,
+            package_id: 1,
+            status: PackageStatus.ACTIVE,
+            purchased_at: new Date(Date.now() - 5 * 86400000).toISOString(),
+            expires_at: new Date(Date.now() + 55 * 86400000).toISOString(),
+            balances: [
+              {
+                id: 1,
+                customer_package_id: 101,
+                service_id: 1,
+                total_quantity: 4,
+                remaining_quantity: 3,
+              },
+            ],
+          },
+        ]);
+      }
+
+      if (appts && appts.length > 0) {
+        setAppointments(appts);
+      } else {
+        // Initial sample appointment
+        const nextDay = new Date();
+        nextDay.setDate(nextDay.getDate() + 2);
+        nextDay.setHours(14, 0, 0, 0);
+
+        setAppointments([
+          {
+            id: 201,
+            customer_id: effectiveCustomerId,
+            professional_id: 1,
+            service_id: 1,
+            start_time: nextDay.toISOString(),
+            end_time: new Date(nextDay.getTime() + 30 * 60000).toISOString(),
+            status: AppointmentStatus.BOOKED,
+            payment_type: PaymentType.PACKAGE_CREDIT,
+            created_at: new Date().toISOString(),
+          },
+        ]);
+      }
+    } catch {
+      // Fallback
+    }
+  }, [effectiveCustomerId]);
+
+  useEffect(() => {
+    loadUserData();
+  }, [loadUserData]);
+
   const showNotification = useCallback(
-    (type: 'success' | 'info' | 'error', message: string) => {
+    (type: 'success' | 'error' | 'info', message: string) => {
       setNotification({ type, message });
       setTimeout(() => {
         setNotification(null);
-      }, 6000);
+      }, 5000);
     },
     []
   );
@@ -345,7 +336,6 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         );
       }
 
-      // Switch to wallet tab so client immediately sees their new balance
       onTabChange('wallet');
     } catch (err: any) {
       showNotification(
@@ -357,10 +347,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
   // Booking Success Handler
   const handleBookingSuccess = (newAppointment: AppointmentResponse) => {
-    // Add to appointments list
     setAppointments((prev) => [newAppointment, ...prev]);
 
-    // If booked with package credit, deduct 1 credit from customer packages state
     if (newAppointment.payment_type === PaymentType.PACKAGE_CREDIT) {
       setCustomerPackages((prev) => {
         let deducted = false;
@@ -408,7 +396,6 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       prev.map((a) => (a.id === cancelledAppointment.id ? cancelledAppointment : a))
     );
 
-    // If it was paid with package credit, refund 1 credit to user's wallet
     if (cancelledAppointment.payment_type === PaymentType.PACKAGE_CREDIT) {
       setCustomerPackages((prev) => {
         let refunded = false;
@@ -439,25 +426,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           };
         });
       });
-
-      showNotification(
-        'info',
-        'Agendamento cancelado dentro do prazo de 2h. 1 crédito foi estornado para sua carteira!'
-      );
-    } else {
-      showNotification('info', 'Agendamento cancelado com sucesso.');
     }
 
-    // Refresh packages and appointments from backend to guarantee sync
-    getCustomerPackages(effectiveCustomerId).then((pkgs) => {
-      if (pkgs) setCustomerPackages(pkgs);
-    }).catch(() => {});
-    getCustomerAppointments(effectiveCustomerId).then((apts) => {
-      if (apts) setAppointments(apts);
-    }).catch(() => {});
+    showNotification(
+      'info',
+      'Agendamento cancelado com sucesso. Verifique os detalhes na listagem.'
+    );
   };
 
-  // Action to start booking directly using a service with active credits
   const handleUseCreditFromWallet = (
     _customerPackageId: number,
     serviceId: number
@@ -476,14 +452,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
       {/* Customer Identification Banner */}
       {currentCustomer ? (
-        <div className="mb-6 p-4 card-paper flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-stamp-sm animate-in fade-in duration-150">
+        <div className="mb-6 p-4 card-clean flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in duration-150">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-paper-dark border-[1.5px] border-ink flex items-center justify-center text-ink font-bold shrink-0 shadow-stamp-sm">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 font-bold shrink-0">
               <User size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-base sm:text-lg text-ink">
+                <span className="font-semibold text-base text-slate-900">
                   Olá, {currentCustomer.name}!
                 </span>
                 <Badge variant="success" size="sm">
@@ -491,7 +467,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                 </Badge>
               </div>
               {currentCustomer.phone && (
-                <p className="font-sign uppercase tracking-wider text-xs text-ink-muted mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   {currentCustomer.phone}
                 </p>
               )}
@@ -502,22 +478,22 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             variant="outline"
             size="sm"
             onClick={logoutCustomer}
-            className="text-xs text-ink-soft hover:text-pole-red hover:border-pole-red"
+            className="text-xs text-slate-600 hover:text-rose-600 hover:border-rose-200"
           >
             Trocar conta / Sair
           </Button>
         </div>
       ) : (
-        <div className="mb-6 p-4 card-paper bg-paper-dark flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-stamp-sm animate-in fade-in duration-200">
+        <div className="mb-6 p-4 card-clean flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in fade-in duration-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-card border-[1.5px] border-ink flex items-center justify-center text-pole-red font-bold shrink-0 shadow-stamp-sm">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 font-bold shrink-0">
               <User size={18} />
             </div>
             <div>
-              <h3 className="font-display text-base sm:text-lg text-ink">
+              <h3 className="font-semibold text-base text-slate-900">
                 Identificação do Cliente
               </h3>
-              <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Identifique-se com seu WhatsApp para ver seus pacotes e créditos acumulados
               </p>
             </div>
@@ -534,22 +510,22 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         </div>
       )}
 
-      {/* 1. Desktop Tab Bar Navigation */}
-      <div className="hidden md:flex items-center justify-between border-b-[1.5px] border-ink pb-3 mb-8">
-        <div className="flex items-center gap-2">
+      {/* 1. Desktop Tab Bar Navigation (Apple style) */}
+      <div className="hidden md:flex items-center justify-between pb-3 mb-8 border-b border-slate-100">
+        <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/60 select-none">
           <button
             type="button"
             onClick={() => onTabChange('booking')}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all select-none
               ${
                 activeTab === 'booking'
-                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
-                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
+                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : 'text-slate-600 hover:text-slate-900'
               }
             `}
           >
-            <CalendarPlus size={16} />
+            <CalendarPlus size={15} />
             <span>Agendar Horário</span>
           </button>
 
@@ -557,15 +533,15 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             type="button"
             onClick={() => onTabChange('packages')}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all select-none
               ${
                 activeTab === 'packages'
-                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
-                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
+                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : 'text-slate-600 hover:text-slate-900'
               }
             `}
           >
-            <Package size={16} />
+            <Package size={15} />
             <span>Pacotes Promocionais</span>
           </button>
 
@@ -573,24 +549,24 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             type="button"
             onClick={() => onTabChange('wallet')}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all select-none
               ${
                 activeTab === 'wallet'
-                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
-                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
+                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : 'text-slate-600 hover:text-slate-900'
               }
             `}
           >
-            <Wallet size={16} />
+            <Wallet size={15} />
             <span>Minha Carteira</span>
             {totalActiveCredits > 0 && (
               <span
                 className={`
-                  px-2 py-0.5 rounded-sm text-xs font-bold font-sign
+                  px-1.5 py-0.2 rounded-full text-[10px] font-bold
                   ${
                     activeTab === 'wallet'
-                      ? 'bg-card text-ink'
-                      : 'bg-pole-red text-card'
+                      ? 'bg-slate-900 text-white'
+                      : 'bg-slate-200 text-slate-700'
                   }
                 `}
               >
@@ -603,24 +579,24 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
             type="button"
             onClick={() => onTabChange('appointments')}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-sm font-sign uppercase tracking-wider text-sm transition-all select-none
+              flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all select-none
               ${
                 activeTab === 'appointments'
-                  ? 'bg-ink text-card shadow-stamp-sm font-bold'
-                  : 'bg-paper-dark text-ink-soft hover:text-ink border border-ink-line'
+                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                  : 'text-slate-600 hover:text-slate-900'
               }
             `}
           >
-            <CalendarCheck2 size={16} />
+            <CalendarCheck2 size={15} />
             <span>Meus Horários</span>
             {upcomingCount > 0 && (
               <span
                 className={`
-                  px-2 py-0.5 rounded-sm text-xs font-bold font-sign
+                  px-1.5 py-0.2 rounded-full text-[10px] font-bold
                   ${
                     activeTab === 'appointments'
-                      ? 'bg-card text-ink'
-                      : 'bg-paper-deep text-ink'
+                      ? 'bg-slate-900 text-white'
+                      : 'bg-slate-200 text-slate-700'
                   }
                 `}
               >
@@ -632,9 +608,9 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
         {/* Quick balance badge on right */}
         {totalActiveCredits > 0 && (
-          <div className="sign-label flex items-center gap-1.5 text-xs text-ink">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200/60">
             <span>Saldo:</span>
-            <span className="font-display text-base text-pole-red">
+            <span className="font-bold text-slate-900">
               {totalActiveCredits} {totalActiveCredits === 1 ? 'crédito' : 'créditos'}
             </span>
           </div>
@@ -645,19 +621,19 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       {notification && (
         <div
           className={`
-            mb-6 p-4 rounded-sm border-[1.5px] border-l-4 flex items-center justify-between gap-3 text-sm animate-in fade-in duration-200 shadow-stamp-sm
+            mb-6 p-4 rounded-xl border flex items-center justify-between gap-3 text-sm animate-in fade-in duration-200 shadow-xs
             ${
               notification.type === 'success'
-                ? 'bg-moss-tint border-moss border-l-moss text-moss'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                 : notification.type === 'error'
-                ? 'bg-pole-red-tint border-pole-red border-l-pole-red text-pole-red'
-                : 'bg-pole-blue-tint border-pole-blue border-l-pole-blue text-pole-blue'
+                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                : 'bg-sky-50 border-sky-200 text-sky-800'
             }
           `}
         >
           <div className="flex items-center gap-2.5">
             {notification.type === 'success' ? (
-              <CheckCircle2 size={18} className="shrink-0 text-moss" />
+              <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
             ) : (
               <AlertCircle size={18} className="shrink-0" />
             )}
@@ -666,7 +642,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           <button
             type="button"
             onClick={() => setNotification(null)}
-            className="font-sign uppercase tracking-wider text-xs opacity-75 hover:opacity-100 underline shrink-0"
+            className="text-xs opacity-75 hover:opacity-100 underline shrink-0 font-medium"
           >
             Fechar
           </button>
@@ -680,10 +656,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         <div className="space-y-8 animate-in fade-in duration-150">
           {/* Header Intro */}
           <div>
-            <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
+            <h1 className="font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
               Agendamento de Horário
             </h1>
-            <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-2xl font-medium">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl font-normal">
               Escolha seu barbeiro de preferência, selecione o serviço e garanta seu horário.
               Se possuir créditos de pacote, você poderá utilizá-los no próximo passo.
             </p>
@@ -691,8 +667,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
           {/* Step 1: Professional Selector */}
           <div className="space-y-3">
-            <div className="sign-label flex items-center gap-2 text-ink text-sm">
-              <User size={14} className="text-pole-red" />
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+              <User size={14} className="text-slate-400" />
               <span>1. Escolha o Profissional</span>
             </div>
 
@@ -709,32 +685,32 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                       setSelectedSlot(null);
                     }}
                     className={`
-                      p-4 card-paper text-left flex items-center justify-between transition-all select-none
+                      p-4 card-clean text-left flex items-center justify-between transition-all select-none
                       ${
                         isSelected
-                          ? 'border-pole-red shadow-stamp ring-1 ring-pole-red'
-                          : 'shadow-stamp-sm hover:shadow-stamp hover:border-ink'
+                          ? 'border-slate-900 ring-2 ring-slate-900/10 shadow-sm'
+                          : 'hover:border-slate-300 hover:shadow-sm'
                       }
                     `}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-10 h-10 rounded-sm border-[1.5px] border-ink flex items-center justify-center font-display text-base ${
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-colors ${
                           isSelected
-                            ? 'bg-pole-red text-card'
-                            : 'bg-paper-dark text-ink'
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-slate-100 text-slate-800'
                         }`}
                       >
                         {prof.name.charAt(0)}
                       </div>
                       <div>
-                        <div className="font-display text-base text-ink">{prof.name}</div>
-                        <div className="font-sign uppercase tracking-wider text-xs text-ink-muted">Barbeiro Especialista</div>
+                        <div className="font-semibold text-sm sm:text-base text-slate-900">{prof.name}</div>
+                        <div className="text-xs text-slate-500">Barbeiro Especialista</div>
                       </div>
                     </div>
 
                     {isSelected && (
-                      <CheckCircle2 size={18} className="text-pole-red shrink-0" />
+                      <CheckCircle2 size={18} className="text-slate-900 shrink-0" />
                     )}
                   </button>
                 );
@@ -745,10 +721,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           {/* Step 2: Service Selection */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="sign-label flex items-center gap-2 text-ink text-sm">
-                <span>2. Selecione o Serviço</span>
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                2. Selecione o Serviço
               </div>
-              <span className="font-sign uppercase tracking-wider text-xs text-ink-muted">
+              <span className="text-xs text-slate-400">
                 {services.length} opções disponíveis
               </span>
             </div>
@@ -776,20 +752,20 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
           {/* Step 3: Date & Slot Picker */}
           {selectedService && (
-            <div className="space-y-4 pt-4 border-t-[1.5px] border-ink">
+            <div className="space-y-4 pt-4 border-t border-slate-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="font-display text-xl text-ink">
+                  <h2 className="font-bold text-lg text-slate-900 tracking-tight">
                     3. Escolha o Dia e Horário Disponível
                   </h2>
-                  <p className="font-sign uppercase tracking-wider text-xs text-ink-soft mt-0.5">
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Atendimento com {selectedProfessional.name} • {selectedService.name} (
                     {selectedService.duration_minutes} min)
                   </p>
                 </div>
               </div>
 
-              <div className="card-paper p-5 sm:p-6 shadow-stamp-sm">
+              <div className="card-clean p-5 sm:p-6">
                 <SlotPicker
                   professionalId={selectedProfessional.id}
                   serviceId={selectedService.id}
@@ -808,17 +784,17 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
               {/* Booking Confirmation Action Bar */}
               {selectedSlot && (
-                <div className="p-4 sm:p-5 card-paper bg-card border-pole-red flex flex-col sm:flex-row items-center justify-between gap-4 shadow-stamp animate-in fade-in duration-150">
+                <div className="p-4 sm:p-5 card-clean bg-white border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-in fade-in duration-150">
                   <div className="flex items-center gap-3 text-center sm:text-left">
-                    <div className="w-10 h-10 rounded-sm bg-pole-red text-card border border-ink flex items-center justify-center font-bold shrink-0 shadow-stamp-sm">
+                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
                       <CalendarCheck2 size={20} />
                     </div>
                     <div>
-                      <h4 className="font-display text-base text-ink">
+                      <h4 className="font-semibold text-base text-slate-900">
                         Horário Selecionado:{' '}
-                        <span className="text-pole-red font-sign uppercase">{selectedSlot.start_time}</span>
+                        <span className="text-blue-600 font-bold">{selectedSlot.start_time}</span>
                       </h4>
-                      <p className="font-sign uppercase tracking-wider text-xs text-ink-soft">
+                      <p className="text-xs text-slate-500">
                         {selectedService.name} com {selectedProfessional.name} em {selectedDate}
                       </p>
                     </div>
@@ -867,23 +843,23 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       {activeTab === 'packages' && (
         <div className="space-y-8 animate-in fade-in duration-150">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-paper-dark border-[1.5px] border-ink text-ink font-sign uppercase tracking-wider text-xs font-semibold mb-2 shadow-stamp-sm">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-semibold mb-2">
               <span>Economize até 30% em seus cortes</span>
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
+            <h1 className="font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
               Pacotes Promocionais
             </h1>
-            <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-2xl font-medium">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl font-normal">
               Compre antecipado e acumule créditos na sua carteira digital. Seus créditos
               são debitados automaticamente ao agendar e estornados se você cancelar com mais de 2 horas de antecedência.
             </p>
           </div>
 
           {/* Guarantee Pill */}
-          <div className="p-4 card-paper bg-paper-dark flex items-center gap-3 text-xs sm:text-sm text-ink shadow-stamp-sm">
-            <ShieldCheck size={24} className="text-pole-red shrink-0" />
+          <div className="p-4 card-clean bg-slate-50/70 border-slate-200/70 flex items-center gap-3 text-xs sm:text-sm text-slate-700">
+            <ShieldCheck size={24} className="text-emerald-600 shrink-0" />
             <div>
-              <span className="font-display text-base text-ink">
+              <span className="font-semibold text-slate-900">
                 Garantia de Reembolso Automático:
               </span>{' '}
               Se precisar desmarcar com ao menos 2h de antecedência, seu crédito retorna
@@ -912,10 +888,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         <div className="space-y-8 animate-in fade-in duration-150">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
+              <h1 className="font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                 Minha Carteira de Créditos
               </h1>
-              <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-xl font-medium">
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl font-normal">
                 Acompanhe o saldo dos seus pacotes adquiridos, datas de validade e use seus créditos para novos agendamentos.
               </p>
             </div>
@@ -930,43 +906,43 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           </div>
 
           {/* Wallet Overview Summary Card */}
-          <div className="p-5 sm:p-6 card-paper grid grid-cols-1 sm:grid-cols-3 gap-4 shadow-stamp-sm">
-            <div className="p-4 rounded-sm bg-paper-dark border-[1.5px] border-ink shadow-sm">
-              <span className="sign-label">
+          <div className="p-5 sm:p-6 card-clean grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Total de Créditos Ativos
               </span>
-              <div className="font-display text-3xl sm:text-4xl text-pole-red mt-1">
+              <div className="text-3xl sm:text-4xl font-bold text-slate-900 mt-1 tabular-nums">
                 {totalActiveCredits}
               </div>
-              <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-0.5 block">
+              <span className="text-xs text-slate-400 mt-0.5 block">
                 Disponíveis para agendamento imediato
               </span>
             </div>
 
-            <div className="p-4 rounded-sm bg-paper-dark border-[1.5px] border-ink shadow-sm">
-              <span className="sign-label">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Pacotes Ativos
               </span>
-              <div className="font-display text-3xl sm:text-4xl text-ink mt-1">
+              <div className="text-3xl sm:text-4xl font-bold text-slate-900 mt-1 tabular-nums">
                 {
                   customerPackages.filter(
                     (p) => p.status === PackageStatus.ACTIVE
                   ).length
                 }
               </div>
-              <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-0.5 block">
+              <span className="text-xs text-slate-400 mt-0.5 block">
                 Vinculados ao seu perfil de cliente
               </span>
             </div>
 
-            <div className="p-4 rounded-sm bg-paper-dark border-[1.5px] border-ink shadow-sm">
-              <span className="sign-label">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Agendamentos Futuros
               </span>
-              <div className="font-display text-3xl sm:text-4xl text-ink mt-1">
+              <div className="text-3xl sm:text-4xl font-bold text-slate-900 mt-1 tabular-nums">
                 {upcomingCount}
               </div>
-              <span className="font-sign uppercase tracking-wider text-[11px] text-ink-muted mt-0.5 block">
+              <span className="text-xs text-slate-400 mt-0.5 block">
                 Horários reservados no salão
               </span>
             </div>
@@ -974,7 +950,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
           {/* Wallet Balance Details */}
           <div>
-            <h2 className="font-display text-xl text-ink mb-4">
+            <h2 className="font-bold text-lg text-slate-900 mb-4">
               Pacotes e Saldos por Serviço
             </h2>
             <WalletBalance
@@ -994,10 +970,10 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       {activeTab === 'appointments' && (
         <div className="space-y-8 animate-in fade-in duration-150">
           <div>
-            <h1 className="font-display text-3xl sm:text-4xl text-ink tracking-tight">
+            <h1 className="font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
               Meus Agendamentos
             </h1>
-            <p className="text-xs sm:text-sm text-ink-soft mt-1 max-w-xl font-medium">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl font-normal">
               Consulte seus atendimentos futuros e histórico de cortes. Você pode cancelar
               com estorno automático até 2 horas antes do horário marcado.
             </p>
@@ -1018,8 +994,8 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
       <CustomerLoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
-        onSuccess={(c) => {
-          showNotification('success', `Bem-vindo(a), ${c.name}!`);
+        onSuccess={() => {
+          showNotification('success', 'Identificado com sucesso!');
         }}
       />
     </div>
