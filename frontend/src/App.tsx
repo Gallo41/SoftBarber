@@ -10,7 +10,7 @@ export const AppContent: React.FC = () => {
   const [clientTab, setClientTab] = useState<ClientNavTab>('booking');
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col antialiased selection:bg-slate-900 selection:text-white">
+    <div className="min-h-screen bg-[#F5F5F4] text-slate-900 flex flex-col antialiased selection:bg-slate-900 selection:text-white">
       {/* Top Application Header */}
       <Header
         activeMode={activeMode}

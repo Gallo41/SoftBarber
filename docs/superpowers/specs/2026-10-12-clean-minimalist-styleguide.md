@@ -2,17 +2,17 @@
 
 ## 1. Filosofia Visual
 - **Foco em Conteúdo & Clareza:** Eliminação total de artifícios vintage/antigos (listras de poste de barbearia, papel envelhecido, texturas desgastadas e sombras duras de carimbo).
-- **Estilo:** Moderno, limpo e direto — inspirado na clareza do ecossistema Apple e na precisão técnica do Linear.
-- **Leveza:** Fundo branco puro `#FFFFFF` e cinza claro neutro `#F8FAFC`, linhas finas de 1px com tons suaves (`slate-200/90`), tipografia Inter de altíssima legibilidade.
+- **Estilo:** Moderno, acolhedor e descansado para os olhos — inspirado no equilíbrio do Notion, Craft e Apple.
+- **Tonalidade Clara sem Ofuscar:** Fundo off-white acolhedor `#F5F5F4` (`stone-100`), cartões em branco puro `#FFFFFF` com sombras suaves (`shadow-sm`) e linhas finas em `#E7E5E4` (`stone-200`), tipografia Inter em grafite quente (`stone-900` / `#1C1917`).
 
-## 2. Paleta de Cores
-- **Fundo da Página:** `#F8FAFC` (`bg-slate-50`)
+## 2. Paleta de Cores (Soft / Warm Stone)
+- **Fundo da Página:** `#F5F5F4` (`bg-stone-100`)
 - **Superfícies & Cartões:** `#FFFFFF` (`bg-white`)
-- **Superfícies Secundárias / Inputs:** `#F1F5F9` (`bg-slate-100`) ou `#F8FAFC` (`bg-slate-50/70`)
-- **Texto Principal:** `#0F172A` (`text-slate-900`)
-- **Texto Secundário:** `#64748B` (`text-slate-500`)
-- **Divisórias e Bordas:** `#E2E8F0` (`border-slate-200`)
-- **Acento Primário (Ação):** `#0F172A` sólido com texto branco (`bg-slate-900 text-white`)
+- **Superfícies Secundárias / Inputs:** `#F5F5F4` (`bg-stone-100`) ou `#FAFAF9` (`bg-stone-50`)
+- **Texto Principal:** `#1C1917` (`text-stone-900`)
+- **Texto Secundário:** `#78716C` (`text-stone-500`)
+- **Divisórias e Bordas:** `#E7E5E4` (`border-stone-200`)
+- **Acento Primário (Ação):** `#1C1917` sólido com texto branco (`bg-stone-900 text-white`)
 - **Destaque / Links:** Azul sutil (`text-blue-600`)
 
 ### Estados e Badges

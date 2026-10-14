@@ -1,7 +1,9 @@
+import colors from 'tailwindcss/colors';
+
 /** @type {import('tailwindcss').Config} */
-// SoftBarber — Design System Clean Minimalista (Estilo Apple / Linear)
-// Foco em superfícies brancas puras, cinzas neutros refinados (slate/zinc),
-// micro-sombras, linhas finas de 1px e tipografia Inter de alta legibilidade.
+// SoftBarber — Design System Soft / Warm Stone (Estilo Notion & Craft)
+// Foco em superfícies off-white suaves (stone-100 #F5F5F4), cartões brancos com contraste
+// acolhedor, bordas stone refinadas, micro-sombras e tipografia Inter em grafite quente.
 export default {
   content: [
     "./index.html",
@@ -9,6 +11,9 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        slate: colors.stone,
+      },
       fontFamily: {
         sans: [
           'Inter',

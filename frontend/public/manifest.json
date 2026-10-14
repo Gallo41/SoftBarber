@@ -5,8 +5,8 @@
   "start_url": "/",
   "id": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
+  "background_color": "#F5F5F4",
+  "theme_color": "#F5F5F4",
   "orientation": "portrait-primary",
   "categories": ["beauty", "lifestyle", "business"],
   "icons": [

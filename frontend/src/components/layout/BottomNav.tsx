@@ -52,7 +52,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 md:hidden safe-area-bottom shadow-lg ${className}`}
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-[#FAFAF9]/90 backdrop-blur-md border-t border-slate-200/80 md:hidden safe-area-bottom shadow-lg ${className}`}
       aria-label="Navegação móvel do cliente"
     >
       <div className="grid grid-cols-4 h-16 max-w-md mx-auto px-2">
